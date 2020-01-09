@@ -12,6 +12,10 @@
         <module>gp_guyt_flume</module>
         <module>gp_guyt_kafka</module>
         <module>gp_guyt_resources</module>
+        <module>gp_guyt_es</module>
+        <module>gp_guyt_hbase</module>
+        <module>gp_guyt_redis</module>
+        <module>gp_guyt_spark</module>
     </modules>
 
     <name>gp_guyt</name>
