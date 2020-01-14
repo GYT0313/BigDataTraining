@@ -17,4 +17,9 @@ public class CommonFields {
      */
     public static final String UTF8 = "UTF-8";
 
+    /**
+     * 数据类型配置文件
+     */
+    public static final String DATA_TYPE_PATH = "common/data-type.properties";
+
 }

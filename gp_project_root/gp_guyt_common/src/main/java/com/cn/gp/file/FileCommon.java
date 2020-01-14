@@ -1,12 +1,14 @@
 package com.cn.gp.file;
 
 import com.cn.gp.fields.CommonFields;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import sun.plugin.cache.OldCacheEntry;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author GuYongtao
@@ -39,7 +41,7 @@ public class FileCommon {
      * <p>创建文件</p>
      * @date 2020/1/13
      */
-    public static boolean createFile(String fileName) {
+    public static boolean createFile(String fileName) throws IOException {
         return createFile(new File(fileName));
     }
 
@@ -54,8 +56,8 @@ public class FileCommon {
                 }
                 return file.createNewFile();
             }
-            return false;
         }
+        return false;
     }
 
 
@@ -65,11 +67,11 @@ public class FileCommon {
      * <p>读取文件内容：按行读取</p>
      * @date 2020/1/13
      */
-    public static List<String> readLines(String fileName) {
+    public static List<String> readLines(String fileName) throws IOException {
         return readLines(fileName, CommonFields.UTF8);
     }
 
-    public static List<String> readLines(String fileName, String enCoding) {
+    public static List<String> readLines(String fileName, String enCoding) throws IOException {
         return readLines(new File(fileName), enCoding);
     }
 
@@ -116,7 +118,7 @@ public class FileCommon {
      * <p>删除文件</p>
      * @date 2020/1/13
      */
-    public static boolean delFile(String filePath) {
+    public static boolean deleteFile(String filePath) {
         boolean flag = false;
         File file = new File(filePath);
         if (file.isFile() && file.exists()) {
@@ -137,7 +139,7 @@ public class FileCommon {
         File newFile = new File(newPath);
         if (oldFile.isFile() && oldFile.exists()) {
             if (newFile.exists()) {
-                delFile(newFile.getAbsolutePath());
+                deleteFile(newFile.getAbsolutePath());
             }
             flag = oldFile.renameTo(newFile);
         }
@@ -167,7 +169,6 @@ public class FileCommon {
     }
 
     /**
-     * @return void
      * @author GuYongtao
      * <p>创建目录</p>
      * @date 2020/1/13
@@ -180,19 +181,27 @@ public class FileCommon {
     }
 
 
+    public static String getJarFilePathByClass(String clazz) throws ClassNotFoundException {
+        return getJarFilePathByClass(Class.forName(clazz));
+    }
 
+    public static String getJarFileDirByClass(String clazz) throws ClassNotFoundException {
+        return getJarFileDirByClass(Class.forName(clazz));
+    }
 
+    public static String getJarFilePathByClass(Class<?> clazz) {
+        return new File(clazz.getProtectionDomain().getCodeSource().getLocation().getFile()).getAbsolutePath();
+    }
 
+    public static String getJarFileDirByClass(Class<?> clazz) {
+        return new File(getJarFilePathByClass(clazz)).getParent();
+    }
 
-
-
-
-
-
-
-
-
-
-
+    public static String getAbstractPath(String abstractPath) throws IOException {
+        URL url = FileCommon.class.getClassLoader().getResource(abstractPath);
+        File file = new File(url.getFile());
+        String content = FileUtils.readFileToString(file, CommonFields.UTF8);
+        return content;
+    }
 
 }
