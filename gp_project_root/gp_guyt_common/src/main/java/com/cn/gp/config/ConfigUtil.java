@@ -3,7 +3,6 @@ package com.cn.gp.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.ObjectInputFilter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,13 +11,12 @@ import java.util.Properties;
 /**
  * @author GuYongtao
  * @version 1.0.0
- * @className: ConfigUtil
- * @description: 读取配置文件
+ * <p> 读取配置文件 </p>
  * @date 2020/1/9
  */
 public class ConfigUtil {
 
-    private static Logger LOG = LoggerFactory.getLogger(ObjectInputFilter.Config.class);
+    private static Logger LOG = LoggerFactory.getLogger(ConfigUtil.class);
 
     private static ConfigUtil configUtil;
 
