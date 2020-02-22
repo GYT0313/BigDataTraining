@@ -18,11 +18,12 @@ import java.util.List;
  */
 public class ClusterConfigurationFileReader implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(ClusterConfigurationFileReader.class);
-    private final String DEFAULT_CONFIG_PATH = "flume/cluster.properties";
+    private static final long serialVersionUID = -1135978619846379424L;
+    private final String DEFAULT_CONFIG_PATH = "flume/flume-config.properties";
     private static ClusterConfigurationFileReader reader;
     private static CompositeConfiguration configuration;
 
-    private ClusterConfigurationFileReader() {
+    public ClusterConfigurationFileReader() {
         LOG.info("加载配置文件: " + DEFAULT_CONFIG_PATH);
         configuration = new CompositeConfiguration();
         loadConfig(DEFAULT_CONFIG_PATH);
@@ -81,7 +82,7 @@ public class ClusterConfigurationFileReader implements Serializable {
     public List<String> getFields(String key) {
         List<String> list = new ArrayList<>();
         configuration.getList(key).forEach(x -> {
-            list.add(x);
+            list.add(x + "");
         });
         return list;
     }
@@ -95,7 +96,7 @@ public class ClusterConfigurationFileReader implements Serializable {
     public int getIndex(String dataType, String field) {
         List<String> list = new ArrayList<>();
         configuration.getList(dataType).forEach(x -> {
-            list.add(x);
+            list.add(x + "");
         });
         int indexOf = list.indexOf(field);
         return indexOf + 1;

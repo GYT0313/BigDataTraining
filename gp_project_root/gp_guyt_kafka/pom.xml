@@ -18,7 +18,7 @@
 
   <properties>
     <poi.version>3.14</poi.version>
-    <kafka.version>2.1.0</kafka.version>
+    <kafka.version>2.1.1</kafka.version>
     <mysql.connector.version>8.0.18</mysql.connector.version>
   </properties>
 
@@ -48,6 +48,14 @@
       <artifactId>kafka_2.12</artifactId>
       <version>${kafka.version}</version>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${kafka.version}</version>
+    </dependency>
+
 
     <dependency>
       <groupId>org.apache.poi</groupId>

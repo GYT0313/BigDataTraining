@@ -6,7 +6,6 @@ import com.cn.gp.flume.utils.FileUtilsStronger;
 import org.apache.commons.io.FileUtils;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
-import org.apache.flume.EventDeliveryException;
 import org.apache.flume.PollableSource;
 import org.apache.flume.channel.ChannelProcessor;
 import org.apache.flume.conf.Configurable;
@@ -48,9 +47,10 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
 
 
     @Override
-    public Status process() throws EventDeliveryException {
+    public Status process() {
+        LOG.info("Flume - Source开始执行...");
         try {
-            Thread.currentThread().sleep(sleeptime * 1000);
+            Thread.sleep(sleepTime * 1000);
         } catch (InterruptedException e) {
             LOG.error(null, e);
         }
@@ -65,7 +65,6 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
             } else {
                 listFiles = ((List<File>) allFiles);
             }
-
             if (listFiles.size() > 0) {
                 for (File file : listFiles) {
                     String fileName = file.getName();
@@ -73,7 +72,6 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
                     Map<String, Object> stringObjectMap = FileUtilsStronger.parseFile(file, successFile);
                     String absoluteFileName = (String) stringObjectMap.get(MapFields.ABSOLUTE_FILENAME);
                     List<String> lines = (List<String>) stringObjectMap.get(MapFields.VALUE);
-
                     if (lines != null && lines.size() > 0) {
                         for (String line : lines) {
                             // 封装event Header，将文件名及绝对路径通过header传送到channel
@@ -146,11 +144,11 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
             dirStr = context.getString(FlumeConfConstant.DIRS);
             dirs = dirStr.split(",");
             //成功处理文件存放目录
-            successfile = context.getString(FlumeConfConstant.SUCCESSFILE);
+            successFile = context.getString(FlumeConfConstant.SUCCESSFILE);
             //每批处理文件个数
-            filenum = context.getInteger(FlumeConfConstant.FILENUM);
+            fileNum = context.getInteger(FlumeConfConstant.FILENUM);
             //睡眠时间
-            sleeptime = context.getLong(FlumeConfConstant.SLEEPTIME);
+            sleepTime = context.getLong(FlumeConfConstant.SLEEPTIME);
             LOG.info("dirStr============" + dirStr);
             LOG.info("dirs==============" + dirs);
             LOG.info("successfile=======" + successFile);

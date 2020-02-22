@@ -35,6 +35,8 @@ public class DataCheck {
      * @date 2020/2/21
      */
     public static Map<String, String> txtParse(String line, String fileName, String absoluteFilename) {
+        LOG.info("txtParse.");
+        LOG.error("xxxxxxxxxxxxxxxxx.");
         Map<String, String> map = new HashMap<>(CommonFields.INITIAL_SIZE);
         String[] fileNames = fileName.split(CommonFields.FILE_NAME_SPLIT);
         // 第一位是数据类型
@@ -72,6 +74,7 @@ public class DataCheck {
      * @date 2020/2/21
      */
     public static Map<String, String> txtParseAndValidation(String line, String fileName, String absoluteFileName) {
+        LOG.info("txtParseAndValidation...");
         Map<String, String> map = new HashMap<>(CommonFields.INITIAL_SIZE);
         Map<String, Object> errorMap = new HashMap<>(CommonFields.INITIAL_SIZE);
         // 文件名按"_"分割, 如: search_source1_uuid.txt
@@ -101,7 +104,7 @@ public class DataCheck {
                 errorMap = DataValidation.dataValidation(map);
             } else {
                 errorMap.put(ErrorMapFields.LENGTH, "数据分割长度不匹配, 需要长度: " + fields.size() +
-                        ", 当前长度：" + lineSplits.length)
+                        ", 当前长度：" + lineSplits.length);
                 errorMap.put(ErrorMapFields.LENGTH_ERROR, ErrorMapFields.LENGTH_ERROR_NUM);
                 LOG.error("数据的字段长度不匹配, 需要长度: " + fields.size() + ", 当前长度：" + lineSplits.length);
                 map = null;

@@ -3,9 +3,12 @@ package com.cn.gp.flume.utils;
 import com.cn.gp.flume.fields.MapFields;
 import com.cn.gp.time.TimeTranstationUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.io.File.separator;
@@ -18,7 +21,7 @@ import static java.io.File.separator;
  */
 public class FileUtilsStronger {
 
-    private static final Logger logger = Logger.getLogger(FileUtilsStronger.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileUtilsStronger.class);
 
     /**
      * @param file
@@ -26,9 +29,12 @@ public class FileUtilsStronger {
      */
     public static Map<String, Object> parseFile(File file, String path) {
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>(16);
         List<String> lines;
-        String fileNew = path + TimeTranstationUtils.Date2yyyy_MM_dd() + getDir(file);
+        // 增加时间+父级目录
+        SimpleDateFormat sdFormatter1 = new SimpleDateFormat("yyyy-MM-dd");
+        Date nowTime = new Date(System.currentTimeMillis());
+        String fileNew = path + sdFormatter1.format(nowTime) + getDir(file);
 
         try {
             if ((new File(fileNew + file.getName())).exists()) {
@@ -40,7 +46,7 @@ public class FileUtilsStronger {
                     logger.error("删除同名已经存在文件" + file.getAbsolutePath() + "失败", e);
                 }
             } else {
-                lines = FileUtils.readLines(file);
+                lines = FileUtils.readLines(file, StandardCharsets.UTF_8);
                 map.put(MapFields.ABSOLUTE_FILENAME, fileNew + file.getName());
                 map.put(MapFields.VALUE, lines);
                 FileUtils.moveToDirectory(file, new File(fileNew), true);
@@ -147,10 +153,9 @@ public class FileUtilsStronger {
      * @return
      */
     public static String getDir(File file) {
-
         String dir = file.getParent();
         StringTokenizer dirs = new StringTokenizer(dir, separator);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while (dirs.hasMoreTokens()) {
             list.add((String) dirs.nextElement());
         }

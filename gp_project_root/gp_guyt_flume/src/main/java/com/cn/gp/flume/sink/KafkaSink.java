@@ -1,6 +1,7 @@
 package com.cn.gp.flume.sink;
 
 import avro.shaded.com.google.common.base.Throwables;
+import com.cn.gp.kafka.producer.StringProducer;
 import org.apache.flume.*;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
@@ -33,14 +34,15 @@ public class KafkaSink extends AbstractSink implements Configurable {
         try {
             Event event = channel.take();
             if (event == null) {
+                LOG.info("event is null");
                 transaction.rollback();
                 return Status.BACKOFF;
             }
             // 获取事件内容
-            String recourd = new String(event.getBody());
+            String record = new String(event.getBody());
             // 发送数据到Kafka
             try {
-                StringProducer.producer(kafkaTopics[0], recourd);
+                StringProducer.producer(kafkaTopics[0], record);
 /*                listKeyedMessage.add(recourd);
                 if(listKeyedMessage.size()>20){
                     logger.info("数据大与10000,推送数据到kafka");
@@ -62,7 +64,7 @@ public class KafkaSink extends AbstractSink implements Configurable {
             transaction.commit();
             return Status.READY;
         } catch (ChannelException e) {
-            LOG.error(e);
+            LOG.error(null, e);
             transaction.rollback();
             return Status.BACKOFF;
         } finally {
@@ -70,7 +72,6 @@ public class KafkaSink extends AbstractSink implements Configurable {
                 transaction.close();
             }
         }
-        return null;
     }
 
     /**
@@ -81,9 +82,14 @@ public class KafkaSink extends AbstractSink implements Configurable {
      */
     @Override
     public void configure(Context context) {
-        kafkaTopics = context.getString("kafkaTopics").split(",");
-        LOG.info("获取Kafka Topic配置: " + context.getString("kafkaTopics"));
-        listKeyMessage = new ArrayList<>();
+        // kafkatopics参数在cdh的flume配置中, kafka_topic参数在flume-config.properties中
+        if (context == null) {
+            LOG.error("context为null");
+        } else {
+            kafkaTopics = context.getString("kafkatopics").split(",");
+            LOG.info("获取Kafka Topic配置: " + context.getString("kafkatopics"));
+            listKeyMessage = new ArrayList<>();
+        }
     }
 
 
