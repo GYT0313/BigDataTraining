@@ -35,8 +35,6 @@ public class DataCheck {
      * @date 2020/2/21
      */
     public static Map<String, String> txtParse(String line, String fileName, String absoluteFilename) {
-        LOG.info("txtParse.");
-        LOG.error("xxxxxxxxxxxxxxxxx.");
         Map<String, String> map = new HashMap<>(CommonFields.INITIAL_SIZE);
         String[] fileNames = fileName.split(CommonFields.FILE_NAME_SPLIT);
         // 第一位是数据类型
@@ -74,7 +72,6 @@ public class DataCheck {
      * @date 2020/2/21
      */
     public static Map<String, String> txtParseAndValidation(String line, String fileName, String absoluteFileName) {
-        LOG.info("txtParseAndValidation...");
         Map<String, String> map = new HashMap<>(CommonFields.INITIAL_SIZE);
         Map<String, Object> errorMap = new HashMap<>(CommonFields.INITIAL_SIZE);
         // 文件名按"_"分割, 如: search_source1_uuid.txt

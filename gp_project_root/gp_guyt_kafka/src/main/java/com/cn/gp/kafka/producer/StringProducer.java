@@ -1,12 +1,15 @@
 package com.cn.gp.kafka.producer;
 
 import com.cn.gp.kafka.config.KafkaConfig;
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author GuYongtao
@@ -18,29 +21,6 @@ public class StringProducer {
     private static final Logger LOG = LoggerFactory.getLogger(StringProducer.class);
 
     /**
-     * 异步发送单条消息
-     *
-     * @param topic
-     * @param record
-     */
-    public static void producer(String topic, String record) {
-        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(
-                KafkaConfig.getInstance().getKafkaProperties());
-        // 创建ProducerRecord对象
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, "guyt", record);
-        try {
-            // 异步发送消息
-            LOG.info("异步发送消息中...");
-            LOG.info(producerRecord.key() + ": " + producerRecord.value());
-            kafkaProducer.send(producerRecord).get();
-        } catch (Exception e) {
-            LOG.error("Kafka-producer发送消息失败: " + record, e);
-        } finally {
-            kafkaProducer.close();
-        }
-    }
-
-    /**
      * 异步发送批量条消息
      *
      * @param topic
@@ -49,18 +29,21 @@ public class StringProducer {
     public static void producerBatch(String topic, List<String> recordList) {
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(
                 KafkaConfig.getInstance().getKafkaProperties());
-        List<ProducerRecord<String, String>> producerRecordList = new ArrayList<>();
+        AtomicInteger num = new AtomicInteger();
         // 同步发送消息
-        DemoProducerCallback demoProducerCallback = new StringProducer().new DemoProducerCallback();
-        recordList.forEach(record -> {
-            try {
-                kafkaProducer.send(new ProducerRecord<>(topic, "guyt", record)).get();
-            } catch (Exception e) {
-                LOG.error("Kafka-producer发送消息失败: " + record, e);
-            } finally {
-                kafkaProducer.close();
-            }
-        });
+        try {
+            recordList.forEach(record -> {
+                try {
+                    kafkaProducer.send(new ProducerRecord<>(topic, "guyt", record)).get();
+                    num.addAndGet(1);
+                } catch (Exception e) {
+                    LOG.error("Kafka-producer发送消息失败: " + record, e);
+                }
+            });
+        } finally {
+            LOG.info("成功下沉数据条数: " + num);
+            kafkaProducer.close();
+        }
     }
 
     /**

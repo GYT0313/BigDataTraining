@@ -48,7 +48,7 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
 
     @Override
     public Status process() {
-        LOG.info("Flume - Source开始执行...");
+//        LOG.info("Flume - Source开始执行...");
         try {
             Thread.sleep(sleepTime * 1000);
         } catch (InterruptedException e) {
@@ -65,14 +65,14 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
             } else {
                 listFiles = ((List<File>) allFiles);
             }
-            if (listFiles.size() > 0) {
+            if (!listFiles.isEmpty()) {
                 for (File file : listFiles) {
                     String fileName = file.getName();
                     // 解析文件: 文件名，文件内容，文件绝对路径
                     Map<String, Object> stringObjectMap = FileUtilsStronger.parseFile(file, successFile);
                     String absoluteFileName = (String) stringObjectMap.get(MapFields.ABSOLUTE_FILENAME);
                     List<String> lines = (List<String>) stringObjectMap.get(MapFields.VALUE);
-                    if (lines != null && lines.size() > 0) {
+                    if (lines != null && !lines.isEmpty()) {
                         for (String line : lines) {
                             // 封装event Header，将文件名及绝对路径通过header传送到channel
                             Map<String, String> map = new HashMap<>();
@@ -88,7 +88,7 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
                     }
 
                     try {
-                        if (eventList.size() > 0) {
+                        if (!eventList.isEmpty()) {
                             // 获取channelProcessor
                             ChannelProcessor channelProcessor = getChannelProcessor();
                             // 通过channelProcessor把eventLists发送
@@ -133,12 +133,11 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
     }
 
     /**
-     * @return void
      * @author GuYongtao
      * <p>初始化Flume参数</p>
      * @date 2020/2/21
      */
-    public void initFlumeParams(Context context) {
+    private void initFlumeParams(Context context) {
         try {
             //文件处理目录
             dirStr = context.getString(FlumeConfConstant.DIRS);
@@ -149,11 +148,11 @@ public class FolderSource extends AbstractSource implements Configurable, Pollab
             fileNum = context.getInteger(FlumeConfConstant.FILENUM);
             //睡眠时间
             sleepTime = context.getLong(FlumeConfConstant.SLEEPTIME);
-            LOG.info("dirStr============" + dirStr);
-            LOG.info("dirs==============" + dirs);
-            LOG.info("successfile=======" + successFile);
-            LOG.info("filenum===========" + fileNum);
-            LOG.info("sleeptime=========" + sleepTime);
+            LOG.info("dirStr============ " + dirStr);
+            LOG.info("dirs============== " + dirs);
+            LOG.info("successfile======= " + successFile);
+            LOG.info("filenum=========== " + fileNum);
+            LOG.info("sleeptime========= " + sleepTime);
         } catch (Exception e) {
             LOG.error("初始化Flume参数失败", e);
         }

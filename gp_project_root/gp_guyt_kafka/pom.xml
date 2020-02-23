@@ -24,6 +24,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
       <groupId>com.cn.gp</groupId>
       <artifactId>gp_guyt_resources</artifactId>
       <version>${project.version}</version>

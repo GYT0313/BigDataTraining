@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.io.File.separator;
@@ -31,10 +30,8 @@ public class FileUtilsStronger {
 
         Map<String, Object> map = new HashMap<>(16);
         List<String> lines;
-        // 增加时间+父级目录
-        SimpleDateFormat sdFormatter1 = new SimpleDateFormat("yyyy-MM-dd");
-        Date nowTime = new Date(System.currentTimeMillis());
-        String fileNew = path + sdFormatter1.format(nowTime) + getDir(file);
+        // 增加时间+父级目录作为上层目录
+        String fileNew = path + TimeTranstationUtils.Date2yyyy_MM_dd() + getDir(file);
 
         try {
             if ((new File(fileNew + file.getName())).exists()) {

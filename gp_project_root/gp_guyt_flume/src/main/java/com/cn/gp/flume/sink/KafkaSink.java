@@ -1,6 +1,6 @@
 package com.cn.gp.flume.sink;
 
-import avro.shaded.com.google.common.base.Throwables;
+import com.cn.gp.flume.fields.CommonFields;
 import com.cn.gp.kafka.producer.StringProducer;
 import org.apache.flume.*;
 import org.apache.flume.conf.Configurable;
@@ -8,7 +8,7 @@ import org.apache.flume.sink.AbstractSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,46 +21,33 @@ public class KafkaSink extends AbstractSink implements Configurable {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaSink.class);
     private String[] kafkaTopics = null;
-    private List<String> listKeyMessage = null;
-    private Long processTimestamp = System.currentTimeMillis();
-
 
     @Override
-    public Status process() throws EventDeliveryException {
+    public Status process() {
         LOG.info("Flume - Sink开始执行...");
         Channel channel = getChannel();
         Transaction transaction = channel.getTransaction();
         transaction.begin();
         try {
-            Event event = channel.take();
-            if (event == null) {
-                LOG.info("event is null");
+            List<Event> events = takeBatchEvent(channel);
+            if (events.isEmpty()) {
+//                LOG.info("event is null");
                 transaction.rollback();
                 return Status.BACKOFF;
             }
-            // 获取事件内容
-            String record = new String(event.getBody());
+            List<String> recordList = new LinkedList<>();
+            events.forEach(event -> {
+                // 获取事件内容
+                recordList.add(new String(event.getBody()));
+            });
             // 发送数据到Kafka
             try {
-                StringProducer.producer(kafkaTopics[0], record);
-/*                listKeyedMessage.add(recourd);
-                if(listKeyedMessage.size()>20){
-                    logger.info("数据大与10000,推送数据到kafka");
-                    StringProducer stringProducer = new StringProducer();
-                    stringProducer.producer(kafkatopics[0],listKeyedMessage);
-                    logger.info("数据大与10000,推送数据到kafka成功");
-                }else if(System.currentTimeMillis()-proTimestamp>=60*1000){
-
-                    logger.info("时间间隔大与60,推送数据到kafka");
-                    StringProducer stringProducer = new StringProducer();
-                    stringProducer.producer(kafkatopics[0],listKeyedMessage);
-                    logger.info("时间间隔大与60,推送数据到kafka成功"+listKeyedMessage.size());
-                }*/
+                StringProducer.producerBatch(kafkaTopics[0], recordList);
             } catch (Exception e) {
                 LOG.error("下沉数据到Kafka失败", e);
-                throw Throwables.propagate(e);
-
+                transaction.rollback();
             }
+
             transaction.commit();
             return Status.READY;
         } catch (ChannelException e) {
@@ -72,6 +59,25 @@ public class KafkaSink extends AbstractSink implements Configurable {
                 transaction.close();
             }
         }
+    }
+
+    /**
+     * @return java.util.List<org.apache.flume.Event>
+     * @author GuYongtao
+     * <p>批量从channel取消息</p>
+     * @date 2020/2/23
+     */
+    private List<Event> takeBatchEvent(Channel channel) {
+        List<Event> eventsBatch = new LinkedList<>();
+        for (int i=0; i < CommonFields.EVENT_BATCH_NUM; i++) {
+            Event take = channel.take();
+            if (take != null) {
+                eventsBatch.add(take);
+            } else {
+                break;
+            }
+        }
+        return eventsBatch;
     }
 
     /**
@@ -87,8 +93,7 @@ public class KafkaSink extends AbstractSink implements Configurable {
             LOG.error("context为null");
         } else {
             kafkaTopics = context.getString("kafkatopics").split(",");
-            LOG.info("获取Kafka Topic配置: " + context.getString("kafkatopics"));
-            listKeyMessage = new ArrayList<>();
+            LOG.info("数据下沉主题列表: " + context.getString("kafkatopics"));
         }
     }
 
