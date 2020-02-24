@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.cn.gp.flume.fields.CommonFields;
 import com.cn.gp.flume.fields.ErrorMapFields;
 import com.cn.gp.flume.fields.MapFields;
-import com.cn.gp.net.HttpRequest;
-import com.cn.gp.project.datatype.DataTypeProperties;
-import com.cn.gp.time.TimeTranstationUtils;
+import com.cn.gp.common.net.HttpRequest;
+import com.cn.gp.common.project.datatype.DataTypeProperties;
+import com.cn.gp.common.time.TimeTranstationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,6 @@
 package com.cn.gp.hdfs;
 
-import com.cn.guyt.common.filter.Filter;
+import com.cn.gp.common.filter.Filter;
 import org.apache.hadoop.fs.FileStatus;
 
 /**

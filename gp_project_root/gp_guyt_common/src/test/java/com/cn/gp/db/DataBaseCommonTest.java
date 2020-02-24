@@ -1,5 +1,6 @@
 package com.cn.gp.db;
 
+import com.cn.gp.common.db.DataBaseCommon;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

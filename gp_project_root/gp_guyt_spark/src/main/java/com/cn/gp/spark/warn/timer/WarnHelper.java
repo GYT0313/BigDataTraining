@@ -2,7 +2,7 @@ package com.cn.gp.spark.warn.timer;
 
 import com.cn.gp.spark.warn.dao.RuleDao;
 import com.cn.gp.spark.warn.domain.RuleDomain;
-import com.cn.guyt.redis.client.JedisSingle;
+import com.cn.gp.redis.client.JedisSingle;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

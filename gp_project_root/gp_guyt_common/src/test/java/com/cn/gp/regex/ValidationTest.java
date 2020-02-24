@@ -1,9 +1,8 @@
 package com.cn.gp.regex;
 
+import com.cn.gp.common.regex.Validation;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ValidationTest {
 

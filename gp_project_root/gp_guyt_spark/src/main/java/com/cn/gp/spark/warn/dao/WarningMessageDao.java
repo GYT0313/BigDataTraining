@@ -1,12 +1,18 @@
 package com.cn.gp.spark.warn.dao;
 
 import com.cn.gp.spark.warn.domain.WarningMessage;
-import com.cn.guyt.common.db.DBCommon;
+import com.cn.gp.common.db.DataBaseCommon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
+/**
+ * @author GuYongtao
+ * @version 1.0.0
+ * <p>  </p>
+ * @date 2020/2/24
+ */
 public class WarningMessageDao {
     private static final Logger LOG = LoggerFactory.getLogger(WarningMessageDao.class);
 
@@ -17,7 +23,7 @@ public class WarningMessageDao {
      * @date 2020/2/23
      */
     public static Integer insertWarningMessageReturnId(WarningMessage warningMessage) {
-        Connection connection = DBCommon.getConn("gp_warn_rules");
+        Connection connection = DataBaseCommon.getConnection("gp_warn_rules");
         String sql = "insert into warn_message(alarmruleid,sendtype,senfinfo,hittime,sendmobile,alarmtype) " +
                 "values(?,?,?,?,?,?)";
         PreparedStatement preparedStatement = null;
@@ -35,11 +41,7 @@ public class WarningMessageDao {
         } catch (SQLException e) {
             LOG.error(null, e);
         } finally {
-            try {
-                DBCommon.close(connection, preparedStatement, resultSet);
-            } catch (SQLException e) {
-                LOG.error(null, e);
-            }
+            DataBaseCommon.close(connection, preparedStatement, resultSet);
         }
         return id;
     }

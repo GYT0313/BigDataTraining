@@ -2,7 +2,7 @@ package com.cn.gp.spark.warn.service;
 
 import com.cn.gp.spark.warn.dao.WarningMessageDao;
 import com.cn.gp.spark.warn.domain.WarningMessage;
-import com.cn.guyt.common.time.TimeTranstationUtils;
+import com.cn.gp.common.time.TimeTranstationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

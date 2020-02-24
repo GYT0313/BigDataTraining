@@ -1,7 +1,7 @@
 package com.cn.gp.spark.warn.service;
 
+import com.cn.gp.common.regex.Validation;
 import com.cn.gp.spark.warn.domain.WarningMessage;
-import com.cn.guyt.common.regex.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

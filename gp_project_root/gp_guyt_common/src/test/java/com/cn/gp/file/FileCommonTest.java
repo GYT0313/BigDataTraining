@@ -1,5 +1,6 @@
 package com.cn.gp.file;
 
+import com.cn.gp.common.file.FileCommon;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 

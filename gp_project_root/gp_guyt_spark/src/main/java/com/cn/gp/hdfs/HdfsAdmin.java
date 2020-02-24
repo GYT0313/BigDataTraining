@@ -1,11 +1,10 @@
 package com.cn.gp.hdfs;
 
 
-import com.cn.guyt.common.adjuster.StringAdjuster;
-import com.cn.guyt.common.file.FileCommon;
+import com.cn.gp.common.adjuster.StringAdjuster;
+import com.cn.gp.common.file.FileCommon;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.commons.configuration2.io.ConfigurationLogger;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;

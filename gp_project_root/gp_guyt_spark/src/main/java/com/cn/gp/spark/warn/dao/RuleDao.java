@@ -1,7 +1,7 @@
 package com.cn.gp.spark.warn.dao;
 
+import com.cn.gp.common.db.DataBaseCommon;
 import com.cn.gp.spark.warn.domain.RuleDomain;
-import com.cn.guyt.common.db.DBCommon;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class RuleDao {
     public static List<RuleDomain> getRuleList() {
         List<RuleDomain> listRules = null;
         // 获取MySQL连接
-        Connection connection = DBCommon.getConn("gp_warm_rules");
+        Connection connection = DataBaseCommon.getConnection("gp_warm_rules");
         // 执行器
         QueryRunner queryRunner = new QueryRunner();
         String sql = "select * from rules";
@@ -38,7 +38,7 @@ public class RuleDao {
         } catch (SQLException e) {
             LOG.error(null, e);
         } finally {
-            DBCommon.close(connection);
+            DataBaseCommon.close(connection);
         }
         return listRules;
     }

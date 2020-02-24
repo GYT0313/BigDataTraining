@@ -1,5 +1,6 @@
 package com.cn.gp.config;
 
+import com.cn.gp.common.config.ConfigUtil;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 

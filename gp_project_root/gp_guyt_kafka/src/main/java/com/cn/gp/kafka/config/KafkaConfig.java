@@ -1,6 +1,6 @@
 package com.cn.gp.kafka.config;
 
-import com.cn.gp.config.ConfigUtil;
+import com.cn.gp.common.config.ConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

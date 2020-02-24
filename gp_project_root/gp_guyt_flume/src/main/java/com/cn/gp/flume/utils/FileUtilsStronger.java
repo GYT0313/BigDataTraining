@@ -1,7 +1,7 @@
 package com.cn.gp.flume.utils;
 
 import com.cn.gp.flume.fields.MapFields;
-import com.cn.gp.time.TimeTranstationUtils;
+import com.cn.gp.common.time.TimeTranstationUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
