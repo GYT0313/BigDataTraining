@@ -15,7 +15,7 @@ object SparkKafkaConfigUtil extends Serializable {
       ConsumerConfig.GROUP_ID_CONFIG -> groupId,
       ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer],
       ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer],
-      ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest")
+      ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest ")
     //    val kafkaParam = Map[String, Object](
     //      "metadata.broker.list" -> brokerList,
     //      "auto.offset.reset" -> "earliest",
