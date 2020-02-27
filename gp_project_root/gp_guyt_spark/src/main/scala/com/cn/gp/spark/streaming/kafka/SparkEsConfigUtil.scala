@@ -13,9 +13,9 @@ object SparkEsConfigUtil {
       ES_PORT -> "9200",
       ES_CLUSTER_NAME -> "gp-application",
       "es.batch.size.entries" -> "6000",
-      "es.nodes.discovery" -> "true",
       "es.batch.size.bytes" -> "300000000",
-      "es.batch.write.refresh" -> "false"
+      "es.batch.write.refresh" -> "false",
+      "es.nodes.wan.only" -> "true"
     )
   }
 }

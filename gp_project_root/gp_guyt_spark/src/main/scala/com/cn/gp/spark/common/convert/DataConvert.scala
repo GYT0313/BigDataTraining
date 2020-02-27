@@ -59,24 +59,30 @@ object DataConvert extends Serializable {
     */
   def getEsFieldTypeMap(): java.util.HashMap[String, java.util.HashMap[String, String]] = {
     // ["wechat": ["phone_mac": "string", "latitude": "long"]]
-    val map = new java.util.HashMap[String, java.util.HashMap[String, String]]
+    val mapTypes = new java.util.HashMap[String, java.util.HashMap[String, String]]
     val properties = ConfigUtil.getInstance().getProperties(fieldMappingPath)
     val tables = properties.get("tables").toString.split(",")
     val tableFields = properties.keySet()
 
     // 按table封装各字段的数据类型
     tables.foreach(table => {
-      val map = new java.util.HashMap[String, String]()
+      val mapType = new java.util.HashMap[String, String]()
       tableFields.foreach(tableField => {
         if (tableField.toString.startsWith(table)) {
           // wechat.imei=string
           val key = tableField.toString.split("\\.")(1)
           val value = properties.get(tableField).toString
-          map.put(key, value)
+          mapType.put(key, value)
         }
       })
+      mapTypes.put(table, mapType)
     })
-    map
+    mapTypes
+  }
+
+
+  def main(args: Array[String]): Unit = {
+    val a = getEsFieldTypeMap()
   }
 
 }

@@ -26,7 +26,7 @@ object Kafka2esStreaming extends Serializable {
   def main(args: Array[String]): Unit = {
     //
     val topics = Set("gp_3")
-    val groupId = "consumer-group-5"
+    val groupId = "consumer-group-31"
 
     // 创建一个streaming context
     val ssc = SparkConfFactory.newSparkLocalStreamingContext("kafka2es", 5L)
@@ -39,11 +39,10 @@ object Kafka2esStreaming extends Serializable {
     // 增加index_date
     val newKafkaDStream = kafkaDStream.map(map => {
       map.put("index_date", TimeTranstationUtils.Date2yyyyMMddHHmmss(
-        java.lang.Long.valueOf(map.get("collect_time") + "000")))
+        java.lang.Long.valueOf(map.get("collect_time") + "000")).replace(" ", "_"))
       map
     }).persist(StorageLevel.MEMORY_AND_DISK)
 
-    print("入ES。。。")
     // 按数据类型入ES
     dataTypes.foreach(dataType => {
       val typeDS = newKafkaDStream.filter(x => {

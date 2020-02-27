@@ -37,6 +37,8 @@ public class ESClientUtils implements Serializable {
         System.setProperty("es.set.netty.runtime.available.processors", "false");
         String clusterName = properties.getProperty("es.cluster.name");
         String clusterNodes1 = properties.getProperty("es.cluster.nodes1");
+        String tcpPort = properties.getProperty("es.cluster.tcp.port");
+
         if (esClusterClient == null) {
             synchronized (ESClientUtils.class) {
                 if (esClusterClient == null) {
@@ -46,7 +48,8 @@ public class ESClientUtils implements Serializable {
                                 .put("cluster.name", clusterName)
                                 .put("client.transport.sniff", false).build();
                         esClusterClient = new PreBuiltTransportClient(settings)
-                                .addTransportAddress(new TransportAddress(InetAddress.getByName(clusterNodes1), 9300));
+                                .addTransportAddress(new TransportAddress(InetAddress.getByName(clusterNodes1),
+                                        Integer.valueOf(tcpPort)));
                         LOG.info("esClusterClient========" + esClusterClient.listedNodes());
                     } catch (Exception e) {
                         LOG.error("获取客户端失败", e);

@@ -19,6 +19,14 @@ import org.slf4j.LoggerFactory;
 public class AdminUtil {
     private static Logger LOG = LoggerFactory.getLogger(AdminUtil.class);
 
+
+    public static void main(String[] args) throws Exception {
+        //创建索引和mapping
+        AdminUtil.buildIndexAndTypes("test", "test",
+                "es/mapping/wechat.json", 3, 1);
+        //index = 类型+日期
+
+    }
     /**
      * @param index
      * @param type
@@ -54,7 +62,6 @@ public class AdminUtil {
     public static boolean indexExists(TransportClient client, String index) {
         boolean ifExists = false;
         try {
-            System.out.println("client===" + client);
             IndicesExistsResponse existsResponse = client.admin().indices().prepareExists(index).execute().actionGet();
             ifExists = existsResponse.isExists();
         } catch (Exception e) {
