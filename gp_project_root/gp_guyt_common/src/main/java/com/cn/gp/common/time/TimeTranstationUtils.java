@@ -54,6 +54,13 @@ public class TimeTranstationUtils {
         return time;
     }
 
+    public static String Date2yyyyMMddHH(long timestamp) {
+        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        nowTime = new Date(timestamp);
+        String time = sdFormatter.format(nowTime);
+        return time;
+    }
+
     public static String Date2yyyy_MM_dd() {
         SimpleDateFormat sdFormatter1 = new SimpleDateFormat("yyyy-MM-dd");
         nowTime = new Date(System.currentTimeMillis());

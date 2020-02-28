@@ -2,7 +2,7 @@ package com.cn.gp.spark.common.convert
 
 
 import com.cn.gp.common.config.ConfigUtil
-import org.apache.spark.internal.Logging
+
 import scala.collection.JavaConversions._
 
 /**
@@ -20,18 +20,18 @@ object DataConvert extends Serializable {
     * @author GuYongtao
     *         <p>转换为ES ObjectMap</p>
     */
-  def strMap2EsObjectMap(map: java.util.Map[String, String]): java.util.Map[String, Object] = {
+  def strMap2EsObjectMap(map: Map[String, String]): Map[String, Object] = {
     val objectMap: java.util.HashMap[String, Object] = new java.util.HashMap[String, Object]()
 
     // ['wechat', [字段1: long, 字段2: int]]
-    val dataType = map.get("table")
+    val dataType = map.get("table").get
     // [字段1: long, 字段2: int]
     val fieldMap = typeFieldMap.get(dataType)
 
     // 配置文件中的字段
-//    val configKeys = fieldMap.keySet()
+    //    val configKeys = fieldMap.keySet()
     // 数据里的字段
-    val dataKeys = map.keySet().iterator()
+    val dataKeys = map.keySet.iterator
 
     while (dataKeys.hasNext) {
       val key = dataKeys.next()
@@ -49,7 +49,11 @@ object DataConvert extends Serializable {
         case "_" => BaseDataConvert.mapString2String(map, key, objectMap)
       }
     }
-    objectMap
+    var res = Map.empty[String, Object]
+    for (key <- objectMap.keySet()) {
+      res += (key -> objectMap.get(key))
+    }
+    res
   }
 
   /**
@@ -83,6 +87,7 @@ object DataConvert extends Serializable {
 
   def main(args: Array[String]): Unit = {
     val a = getEsFieldTypeMap()
+    println(a.keySet())
   }
 
 }

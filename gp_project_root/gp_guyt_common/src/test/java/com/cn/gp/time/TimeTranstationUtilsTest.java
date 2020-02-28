@@ -21,4 +21,9 @@ class TimeTranstationUtilsTest {
     void testDate2yyyy_MM_dd() {
         System.out.println(TimeTranstationUtils.Date2yyyy_MM_dd());
     }
+
+    @Test
+    void testDate() {
+        System.out.println(TimeTranstationUtils.Date2yyyyMMddHH(1789098762));
+    }
 }
