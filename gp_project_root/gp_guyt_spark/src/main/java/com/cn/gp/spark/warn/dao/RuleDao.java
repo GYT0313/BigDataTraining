@@ -29,7 +29,7 @@ public class RuleDao {
     public static List<RuleDomain> getRuleList() {
         List<RuleDomain> listRules = null;
         // 获取MySQL连接
-        Connection connection = DataBaseCommon.getConnection("gp_warm_rules");
+        Connection connection = DataBaseCommon.getConnection("gp_warn_rules");
         // 执行器
         QueryRunner queryRunner = new QueryRunner();
         String sql = "select * from rules";
@@ -41,6 +41,12 @@ public class RuleDao {
             DataBaseCommon.close(connection);
         }
         return listRules;
+    }
+
+    public static void main(String[] args) {
+        List<RuleDomain> ruleList = getRuleList();
+        RuleDomain ruleDomain = ruleList.get(0);
+        System.out.println(ruleDomain);
     }
 
 }

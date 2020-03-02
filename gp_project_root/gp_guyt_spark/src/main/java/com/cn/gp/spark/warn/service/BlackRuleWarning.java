@@ -30,15 +30,16 @@ public class BlackRuleWarning {
     }
 
 
-    public static void blackWarning(Map<String, Object> map, Jedis jedis) {
+    public static void blackWarning(Map<String, String> map, Jedis jedis) {
         LOG.info("开始预警校验...");
         listWarnFields.forEach(warnField -> {
-            if (map.containsKey(warnField) && StringUtils.isNotBlank(map.get(warnField).toString())) {
+            if (map.containsKey(warnField) && StringUtils.isNotBlank(map.get(warnField))) {
                 // 获取验证字段的值, 如phone
-                String warFieldValue = map.get(warnField).toString();
+                String warFieldValue = map.get(warnField);
                 // 从redis中进行对比, redis中的key=phone:123456789, 所以进行拼接
                 String key = warnField + ":" + warFieldValue;
                 if (jedis.exists(key)) {
+                    System.out.println("命中...");
                     // 如果命中可以进行预警处理
                     beginWarning(jedis, key);
                 }
@@ -87,9 +88,9 @@ public class BlackRuleWarning {
             // 规则ID(那条规则命中)
             warningMessage.setAlarmRuleid(valueMap.get("id"));
             // 预警方式
-            warningMessage.setSendType(valueMap.get("send_type"));
+            warningMessage.setSendType(valueMap.get("sendType"));
             // 预警信息接收手机
-            warningMessage.setSendMobile(valueMap.get("send_mobile"));
+            warningMessage.setSendMobile(valueMap.get("sendMobile"));
             // 规则发布人
             warningMessage.setAccountid(valueMap.get("publisher"));
             // 默认预警发送方式

@@ -31,6 +31,7 @@ public class WarnHelper {
         Jedis jedis = null;
         try {
             // 获取Redis客户端, 选择15号库
+            jedis = JedisSingle.getJedis(15);
             for (int i = 0; i < ruleList.size(); i++) {
                 RuleDomain ruleDomain = ruleList.get(i);
                 String id = ruleDomain.getId() + "";
@@ -45,16 +46,21 @@ public class WarnHelper {
                 // 通过redis hash结构
                 jedis.hset(redisKey, "id", StringUtils.isNoneBlank(id) ? id : "");
                 jedis.hset(redisKey, "publisher", StringUtils.isNoneBlank(publisher) ? publisher : "");
-                jedis.hset(redisKey, "warn_fieldname", StringUtils.isNoneBlank(warnFieldName) ? warnFieldName : "");
-                jedis.hset(redisKey, "warn_fieldvalue", StringUtils.isNoneBlank(
+                jedis.hset(redisKey, "warnFieldName", StringUtils.isNoneBlank(warnFieldName) ? warnFieldName : "");
+                jedis.hset(redisKey, "warnFieldValue", StringUtils.isNoneBlank(
                         warnFieldValue) ? warnFieldValue : "");
-                jedis.hset(redisKey, "send_mobile", StringUtils.isNoneBlank(sendMobile) ? sendMobile : "");
-                jedis.hset(redisKey, "send_type", StringUtils.isNoneBlank(sendType) ? sendType : "");
+                jedis.hset(redisKey, "sendMobile", StringUtils.isNoneBlank(sendMobile) ? sendMobile : "");
+                jedis.hset(redisKey, "sendType", StringUtils.isNoneBlank(sendType) ? sendType : "");
             }
         } catch (Exception e) {
-            LOG.error("同步规则到Elastic Search失败", e);
+            LOG.error("同步规则到redis 失败", e);
         } finally {
             JedisSingle.close(jedis);
         }
+    }
+
+
+    public static void main(String[] args) {
+        WarnHelper.syncRuleFromMysql2Redis();
     }
 }

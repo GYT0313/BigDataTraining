@@ -5,7 +5,7 @@ import java.sql.Date;
 /**
  * @author GuYongtao
  * @version 1.0.0
- * <p> 警告消息 </p>
+ * <p> 存储警告消息实体类 </p>
  * @date 2020/2/23
  */
 public class WarningMessage {

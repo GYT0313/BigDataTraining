@@ -4,7 +4,7 @@ import java.sql.Date;
 
 /**
  * @author GuYongtao
- * <p>规则字段</p>
+ * <p>规则字段实体类</p>
  * @return
  * @date 2020/2/23
  */
@@ -98,5 +98,20 @@ public class RuleDomain {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "RuleDomain{" +
+                "id=" + id +
+                ", warnFieldName='" + warnFieldName + '\'' +
+                ", warnFieldValue='" + warnFieldValue + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", sendType='" + sendType + '\'' +
+                ", sendMobile='" + sendMobile + '\'' +
+                ", sendMail='" + sendMail + '\'' +
+                ", sendDingDing='" + sendDingDing + '\'' +
+                ", createTime=" + createTime +
+                '}';
     }
 }

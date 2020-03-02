@@ -31,7 +31,7 @@ public class JedisSingle {
 
     public static Jedis getJedis(int db) {
         Jedis jedis = JedisSingle.getJedis();
-        if (jedis == null) {
+        if (jedis != null) {
             jedis.select(db);
         }
         return jedis;

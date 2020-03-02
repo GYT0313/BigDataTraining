@@ -14,7 +14,7 @@ public class DataBaseFields {
     /**
      * 配置文件key名称
      */
-    public static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    public static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     public static final String USER_NAME = "user";
     public static final String PASSWORD = "password";
     public static final String IP = "db_ip";
