@@ -1,67 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <groupId>com.cn.gp</groupId>
-  <artifactId>gp_guyt_hbase</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <artifactId>gp_guyt</artifactId>
     <groupId>com.cn.gp</groupId>
+    <artifactId>gp_guyt_hbase</artifactId>
     <version>1.0-SNAPSHOT</version>
-  </parent>
 
-  <name>gp_guyt_hbase</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
-    <hbase.version>2.1.0</hbase.version>
-  </properties>
+    <parent>
+        <artifactId>gp_guyt</artifactId>
+        <groupId>com.cn.gp</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.cn.gp</groupId>
-      <artifactId>gp_guyt_resources</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cn.gp</groupId>
-      <artifactId>gp_guyt_common</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
+    <name>gp_guyt_hbase</name>
+    <!-- FIXME change it to the project's website -->
+    <url>http://www.example.com</url>
 
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-client</artifactId>
-      <version>${hbase.version}-${cdh.version}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zookeeper</artifactId>
-          <groupId>org.apache.zookeeper</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-server</artifactId>
-      <version>${hbase.version}-${cdh.version}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>servlet-api-2.5</artifactId>
-          <groupId>org.mortbay.jetty</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-  </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <hbase.version>2.1.0</hbase.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.cn.gp</groupId>
+            <artifactId>gp_guyt_common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cn.gp</groupId>
+            <artifactId>gp_guyt_resources</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>${hbase.version}-${cdh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-server</artifactId>
+            <version>${hbase.version}-${cdh.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>

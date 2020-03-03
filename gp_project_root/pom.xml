@@ -16,6 +16,7 @@
         <module>gp_guyt_hbase</module>
         <module>gp_guyt_redis</module>
         <module>gp_guyt_spark</module>
+        <module>gp_guyt_hbase</module>
     </modules>
 
     <name>gp_guyt</name>
