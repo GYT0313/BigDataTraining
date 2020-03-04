@@ -25,8 +25,8 @@ object Kafka2HiveTest extends Serializable {
 
   def main(args: Array[String]): Unit = {
 
-    val topics = Set("gp_6")
-    val groupId = "consumer-group-102"
+    val topics = Set("gp_7")
+    val groupId = "consumer-group-109"
 
     // 创建一个streaming context
     val ssc = SparkConfFactory.newSparkLocalStreamingContext("spark-streaming-hive", 5L)
@@ -47,7 +47,7 @@ object Kafka2HiveTest extends Serializable {
     HiveConfig.tables.foreach(table => {
       //过滤出单一数据类型(获取和table相同类型的所有数据)
       val tableDS = kafkaDStream.filter(x => {
-        table.equals(x.get("table").get)
+        table.equals(x.get(CommonFields.TABLE_NAME).get)
       })
       //获取数据类型的schema 表结构
       val schema = HiveConfig.mapSchema.get(table)
@@ -66,7 +66,6 @@ object Kafka2HiveTest extends Serializable {
 
         //2.写到HDFS   不管存不存在都要把数据写入进去 通过追加的方式
         //每10秒写一次，写一次会生成一个文件
-        tableDF.show()
         tableDF.write.mode(SaveMode.Append).parquet(pathAll)
 
         //3.加载数据到HIVE

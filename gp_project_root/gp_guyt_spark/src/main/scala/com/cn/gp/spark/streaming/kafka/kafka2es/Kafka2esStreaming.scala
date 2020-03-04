@@ -2,7 +2,7 @@ package com.cn.gp.spark.streaming.kafka.kafka2es
 
 import com.cn.gp.common.project.datatype.DataTypeProperties
 import com.cn.gp.common.time.TimeTranstationUtils
-import com.cn.gp.spark.common.SparkConfFactory
+import com.cn.gp.spark.common.{CommonFields, SparkConfFactory}
 import com.cn.gp.spark.streaming.kafka.SparkKafkaConfigUtil
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.storage.StorageLevel
@@ -28,7 +28,6 @@ object Kafka2esStreaming extends Serializable {
     //
     val topics = Set("gp_3")
     val groupId = "consumer-group-88"
-    val indexDateName = "index_date"
 
     // 创建一个streaming context
     val ssc = SparkConfFactory.newSparkLocalStreamingContext("kafka2es", 5L)
@@ -42,11 +41,11 @@ object Kafka2esStreaming extends Serializable {
 
     // 增加index_date
     val newKafkaDStream = kafkaDStream.map(map => {
-      val collectTime = map.get("collect_time") match {
+      val collectTime = map.get(CommonFields.COLLECT_TIME) match {
         case Some(x) => x
       }
       var temp = map
-      temp += (indexDateName -> TimeTranstationUtils.Date2yyyyMMddHH(java.lang.Long.valueOf(collectTime + "000")))
+      temp += (CommonFields.INDEX_DATE_NAME -> TimeTranstationUtils.Date2yyyyMMddHH(java.lang.Long.valueOf(collectTime + "000")))
       temp
     }).persist(StorageLevel.MEMORY_AND_DISK)
 
@@ -54,9 +53,9 @@ object Kafka2esStreaming extends Serializable {
     dataTypes.foreach(dataType => {
       val typeDS = newKafkaDStream.filter(x => {
         // x.get("table")得到是数据类型：wechat、qq，而不是x.get(dataType)
-        dataType.equals(x.get("table").get)
+        dataType.equals(x.get(CommonFields.TABLE_NAME).get)
       })
-      Kafka2esJob.insertData2EsByDate(dataType, typeDS, indexDateName)
+      Kafka2esJob.insertData2EsByDate(dataType, typeDS, CommonFields.INDEX_DATE_NAME)
     })
 
     val lines = newKafkaDStream.map(_.values)
