@@ -26,6 +26,7 @@
         <spark.version>2.4.0</spark.version>
         <elasticsearch.version>6.4.3</elasticsearch.version>
         <scala.version>2.11.12</scala.version>
+        <hive.version>2.1.1</hive.version>
     </properties>
 
     <dependencies>

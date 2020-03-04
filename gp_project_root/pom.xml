@@ -16,7 +16,6 @@
         <module>gp_guyt_hbase</module>
         <module>gp_guyt_redis</module>
         <module>gp_guyt_spark</module>
-        <module>gp_guyt_hbase</module>
     </modules>
 
     <name>gp_guyt</name>
@@ -31,7 +30,7 @@
         <junit.version>4.12</junit.version>
         <org.slf4j.version>1.7.25</org.slf4j.version>
         <zookeeper.version>3.4.5</zookeeper.version>
-        <scala.version>2.12.8</scala.version>
+        <scala.version>2.11.12</scala.version>
     </properties>
 
     <repositories>

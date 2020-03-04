@@ -1,9 +1,11 @@
 package com.cn.gp.spark.common
 
 import java.io.IOException
+import java.util
 import java.util.Properties
 
 import org.apache.commons.io.IOUtils
+import org.apache.hadoop.conf.Configuration
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.slf4j.{Logger, LoggerFactory}
@@ -72,6 +74,26 @@ object SparkConfFactory extends Serializable {
     val sparkConf = newSparkConf(appName)
     sparkConf.setAll(readConfigFileAsTraversable(DEFAULT_BATCH_PATH))
     sparkConf
+  }
+
+  /**
+    * @return org.apache.spark.SparkConf
+    * @author GuYongtao
+    *         <p>hive配置</p>
+    */
+  def newSparkLocalConfHiveConf(appName: String = "spark-hive", threads: Int = 2): SparkConf = {
+    val sc = newSparkLocalConf(appName, threads)
+    val configuration: Configuration = new Configuration
+    configuration.addResource(CommonFields.HIVE_SITE_XML)
+    val iterator: util.Iterator[util.Map.Entry[String, String]] = configuration.iterator
+    while ( {
+      iterator.hasNext
+    }) {
+      val next: util.Map.Entry[String, String] = iterator.next
+      sc.set(next.getKey, next.getValue)
+    }
+    sc.set("spark.sql.parquet.mergeSchema", "true")
+    sc
   }
 
 
