@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.cn.gp.flume.fields.CommonFields;
 import com.cn.gp.flume.fields.ErrorMapFields;
 import com.cn.gp.flume.fields.MapFields;
-import com.cn.gp.net.HttpRequest;
-import com.cn.gp.project.datatype.DataTypeProperties;
-import com.cn.gp.time.TimeTranstationUtils;
+import com.cn.gp.common.net.HttpRequest;
+import com.cn.gp.common.project.datatype.DataTypeProperties;
+import com.cn.gp.common.time.TimeTranstationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class DataCheck {
                 map.put(MapFields.ABSOLUTE_FILENAME, absoluteFilename);
                 // 将消息对应封装
                 for (int i = 0; i < lineSplits.length; i++) {
-                    map.put(fields.get(i), lineSplits[i]);
+                    map.put(fields.get(i).trim(), lineSplits[i]);
                 }
             } else {
                 map = null;
@@ -95,7 +95,7 @@ public class DataCheck {
                 map.put(MapFields.ABSOLUTE_FILENAME, absoluteFileName);
                 // 将消息对应封装
                 for (int i = 0; i < lineSplits.length; i++) {
-                    map.put(fields.get(i), lineSplits[i]);
+                    map.put(fields.get(i).trim(), lineSplits[i]);
                 }
                 // 校验
                 errorMap = DataValidation.dataValidation(map);

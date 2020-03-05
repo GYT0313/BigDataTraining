@@ -1,5 +1,6 @@
 package com.cn.gp.time;
 
+import com.cn.gp.common.time.TimeTranstationUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
@@ -19,5 +20,10 @@ class TimeTranstationUtilsTest {
     @Test
     void testDate2yyyy_MM_dd() {
         System.out.println(TimeTranstationUtils.Date2yyyy_MM_dd());
+    }
+
+    @Test
+    void testDate() {
+        System.out.println(TimeTranstationUtils.Date2yyyyMMddHH(1789098762));
     }
 }

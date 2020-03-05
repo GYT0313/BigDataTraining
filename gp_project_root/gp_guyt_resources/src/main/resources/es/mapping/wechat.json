@@ -96,7 +96,7 @@
     "id": {
       "type": "keyword"
     },
-    "table": {
+    "table_name": {
       "type": "keyword"
     },
     "filename": {

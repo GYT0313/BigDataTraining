@@ -10,7 +10,7 @@ public class MapFields {
     public static final String ID="id";
     public static final String SOURCE="source";
     public static final String TYPE="TYPE";
-    public static final String TABLE="table";
+    public static final String TABLE="table_name";
     public static final String FILENAME="filename";
     public static final String RKSJ="rksj";
     public static final String ABSOLUTE_FILENAME="absolute_filename";

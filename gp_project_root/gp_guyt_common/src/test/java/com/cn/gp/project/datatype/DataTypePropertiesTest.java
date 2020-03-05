@@ -1,6 +1,7 @@
 package com.cn.gp.project.datatype;
 
 
+import com.cn.gp.common.project.datatype.DataTypeProperties;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
