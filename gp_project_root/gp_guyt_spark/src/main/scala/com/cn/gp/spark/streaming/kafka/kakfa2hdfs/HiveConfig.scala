@@ -2,9 +2,8 @@ package com.cn.gp.spark.streaming.kafka.kakfa2hdfs
 
 import java.util
 
+import com.cn.gp.spark.common.CommonFields
 import org.apache.commons.configuration.{CompositeConfiguration, ConfigurationException, PropertiesConfiguration}
-import org.apache.hadoop.hive.metastore.api.AlreadyExistsException
-import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -13,10 +12,6 @@ import scala.collection.mutable.ArrayBuffer
 
 object HiveConfig extends Serializable {
   protected final val LOGGER: Logger = LoggerFactory.getLogger(HiveConfig.getClass)
-  //HIVE 文件根目录
-  //  var hive_root_path = "/user/kf_xy_xy_mn/del_cache_table/"
-  var hive_root_path = "/user/hive/warehouse/external/"
-  var hiveFieldPath = "es/mapping/field-mapping.properties"
 
   var config: CompositeConfiguration = null
   //所有的表
@@ -34,42 +29,43 @@ object HiveConfig extends Serializable {
     */
   initParams()
 
-
   /**
     * @return void
     * @author GuYongtao
     *         <p>初始化HIVE参数</p>
     */
   def initParams(): Unit = {
-    //加载es/mapping/fieldmapping.properties 配置文件
-    config = HiveConfig.readCompositeConfiguration(hiveFieldPath)
-    println("==========================config====================================")
-    config.getKeys.foreach(key => {
-      // key=等号左边，config.getProperty(key.toString)=等号右边
-      println(key + ":" + config.getProperty(key.toString))
-    })
-    println("==========================tables====================================")
-    //wechat, search
-    tables = config.getList("tables")
-    tables.foreach(table => {
-      println(table)
-    })
-    println("======================tableFieldsMap================================")
-    //(qq,{qq.imsi=string, qq.id=string, qq.send_message=string, qq.filename=string})
-    tableFieldsMap = HiveConfig.getKeysByType()
-    tableFieldsMap.foreach(x => {
-      println(x)
-    })
-    println("=========================mapSchema===================================")
-    mapSchema = HiveConfig.createSchema()
-    mapSchema.foreach(x => {
-      println(x)
-    })
-    println("=========================hiveTableSQL===================================")
-    hiveTableSQL = HiveConfig.getHiveTables()
-    hiveTableSQL.foreach(x => {
-      println(x)
-    })
+    if (config == null && tables == null && tableFieldsMap == null && mapSchema == null && hiveTableSQL == null) {
+      //加载es/mapping/fieldmapping.properties 配置文件
+      config = HiveConfig.readCompositeConfiguration(CommonFields.FIELD_MAPPING)
+      println("==========================config====================================")
+      config.getKeys.foreach(key => {
+        // key=等号左边，config.getProperty(key.toString)=等号右边
+        println(key + ":" + config.getProperty(key.toString))
+      })
+      println("==========================tables====================================")
+      //wechat, search
+      tables = config.getList("tables")
+      tables.foreach(table => {
+        println(table)
+      })
+      println("======================tableFieldsMap================================")
+      //(qq,{qq.imsi=string, qq.id=string, qq.send_message=string, qq.filename=string})
+      tableFieldsMap = HiveConfig.getKeysByType()
+      tableFieldsMap.foreach(x => {
+        println(x)
+      })
+      println("=========================mapSchema===================================")
+      mapSchema = HiveConfig.createSchema()
+      mapSchema.foreach(x => {
+        println(x)
+      })
+      println("=========================hiveTableSQL===================================")
+      hiveTableSQL = HiveConfig.getHiveTables()
+      hiveTableSQL.foreach(x => {
+        println(x)
+      })
+    }
   }
 
   /**
@@ -158,7 +154,7 @@ object HiveConfig extends Serializable {
         }
       })
       sql = sql.substring(0, sql.length - 1)
-      sql = sql + s")STORED AS PARQUET location '${hive_root_path}${table}'"
+      sql = sql + s")STORED AS PARQUET location '${CommonFields.HIVE_META_STORE_DIR}${table}'"
       /*      sql = sql + s") partitioned by(year string,month string,day string) STORED AS PARQUET " +
               s"location '${path}${table}'"*/
       hiveTableSqlMap.put(table.toString, sql)
@@ -174,25 +170,24 @@ object HiveConfig extends Serializable {
     */
   def createSchema(): util.Map[String, StructType] = {
     // schema  表结构
-    /*   CREATE TABLE `warn_message` (
-         //arrayStructType
-         `id` int(11) NOT NULL AUTO_INCREMENT,
-         `alarmRuleid` varchar(255) DEFAULT NULL,
-         `alarmType` varchar(255) DEFAULT NULL,
-         `sendType` varchar(255) DEFAULT NULL,
-         `sendMobile` varchar(255) DEFAULT NULL,
-         `sendEmail` varchar(255) DEFAULT NULL,
-         `sendStatus` varchar(255) DEFAULT NULL,
-         `senfInfo` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-         `hitTime` datetime DEFAULT NULL,
-         `checkinTime` datetime DEFAULT NULL,
-         `isRead` varchar(255) DEFAULT NULL,
-         `readAccounts` varchar(255) DEFAULT NULL,
-         `alarmaccounts` varchar(255) DEFAULT NULL,
-         `accountid` varchar(11) DEFAULT NULL,
-         PRIMARY KEY (`id`)
-       ) ENGINE=MyISAM AUTO_INCREMENT=528 DEFAULT CHARSET=latin1;*/
-
+    /*   CREATE EXTERNAL TABLE `search`(
+          `imei` string,
+          `imsi` string,
+          `longitude` string,
+          `latitude` string,
+          `phone_mac` string,
+          `device_mac` string,
+          `device_number` string,
+          `collect_time` string,
+          `username` string,
+          `phone` string,
+          `engine` string,
+          `content` string,
+          `search_url` string,
+          `id` string,
+          `table_name` string,
+          `filename` string,
+          `absolute_filename` string)*/
 
     val mapStructType: util.Map[String, StructType] = new util.HashMap[String, StructType]()
 
@@ -223,28 +218,5 @@ object HiveConfig extends Serializable {
     }
     mapStructType
   }
-
-  /**
-    * @return void
-    * @author GuYongtao
-    *         <p>创建HIVE表</p>
-    */
-  def createHiveTable(hiveContext: HiveContext): Unit = {
-    //    HiveConfig.initParams()
-    val keys = HiveConfig.hiveTableSQL.keySet()
-    keys.foreach(key => {
-      val sql = HiveConfig.hiveTableSQL.get(key)
-      //通过hiveContext 和已经创建好的SQL语句去创建HIVE表
-      try {
-        hiveContext.sql(sql)
-        println(s"创建表${key}成功")
-      } catch {
-        case e1: AlreadyExistsException => LOGGER.error(s"${key} 表已存在.", e1)
-        case e2: Exception => LOGGER.error(s"${key} 表创建失败.", e2)
-      }
-    })
-  }
-
-
 
 }

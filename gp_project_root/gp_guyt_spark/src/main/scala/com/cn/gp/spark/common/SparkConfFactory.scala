@@ -40,7 +40,7 @@ object SparkConfFactory extends Serializable {
   }
 
   def newSparkLocalStreamingContext(appName: String = "sparkstreaming",
-                                    batchInterval: Long = 300,
+                                    batchInterval: Long = 30,
                                     threads: Int = 2): StreamingContext = {
     val sparkConf = SparkConfFactory.newSparkLocalConf(appName, threads)
     sparkConf.set("spark.streaming.kafka.maxRatePerPartition", "1")
