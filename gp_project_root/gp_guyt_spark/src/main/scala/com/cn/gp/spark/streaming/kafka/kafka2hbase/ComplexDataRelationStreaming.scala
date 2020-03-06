@@ -35,7 +35,6 @@ object ComplexDataRelationStreaming extends Serializable {
 
   def main(args: Array[String]): Unit = {
 
-
     //初始化hbase表
     //nitRelationHbaseTable(complexRelationField)
 
@@ -60,7 +59,6 @@ object ComplexDataRelationStreaming extends Serializable {
           val table = map.get(CommonFields.TABLE_NAME).get
           //首先判断是不是特殊表(身份证信息)
           if (table.equals("card")) {
-
             val card = map.get("card").get
             val phone = map.get("phone").get
             if (StringUtils.isNotBlank(phone)) {
@@ -69,7 +67,7 @@ object ComplexDataRelationStreaming extends Serializable {
               var exists = false
               //如果存在，则说明是总关联表先入库，则直接将phone 合并到总关联表钟
               try {
-                table = HBaseTableUtil.getTable("test:phone")
+                table = HBaseTableUtil.getTable(s"${CommonFields.NAME_SPACE}:phone")
                 exists = HBaseSearchServiceImpl.existsRowkey(table, phone)
 
                 if (exists) {
@@ -78,7 +76,7 @@ object ComplexDataRelationStreaming extends Serializable {
                   val get = new Get(phone.getBytes)
                   get.setMaxVersions(100)
                   val set = new util.HashSet[String]()
-                  val extractor = new SingleColumnMultiVersionRowExtrator("cf".getBytes(), "phone_mac".getBytes(), set)
+                  val extractor = new SingleColumnMultiVersionRowExtrator(CommonFields.COLUMN_FAMILY.getBytes(), "phone_mac".getBytes(), set)
                   // 获取phone表下多版本的phone_mac
                   val macSet = baseSearchService.search(table.getName.getNameAsString, get, extractor)
 
@@ -88,15 +86,15 @@ object ComplexDataRelationStreaming extends Serializable {
                     val put = new Put(macRowkey.getBytes())
                     val value = card
                     val versionNum = ("card" + value).hashCode() & Integer.MAX_VALUE
-                    put.addColumn("cf".getBytes(), Bytes.toBytes("card"), versionNum, Bytes.toBytes(value.toString))
-                    HBaseInsertHelper.put("test:relation", put)
+                    put.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes("card"), versionNum, Bytes.toBytes(value.toString))
+                    HBaseInsertHelper.put(s"${CommonFields.NAME_SPACE}:relation", put)
 
                     //构建索引表
                     val put_2 = new Put(value.getBytes())
-                    val table_name = s"test:card"
+                    val table_name = s"${CommonFields.NAME_SPACE}:card"
                     //使用主表的rowkey 取hash作为二级索引的版本号
                     val versionNum_2 = macRowkey.hashCode() & Integer.MAX_VALUE
-                    put_2.addColumn("cf".getBytes(), Bytes.toBytes("phone_mac"), versionNum_2, Bytes.toBytes(macRowkey.toString))
+                    put_2.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes("phone_mac"), versionNum_2, Bytes.toBytes(macRowkey.toString))
                     HBaseInsertHelper.put(table_name, put_2)
 
                   })
@@ -105,7 +103,7 @@ object ComplexDataRelationStreaming extends Serializable {
                   //如果不存在，则说明是总关联数据后入，需要关联进去的数据先入，
                   //将这条数据放入缓存表中
                   val put = new Put(phone.getBytes())
-                  put.addColumn("cf".getBytes(), Bytes.toBytes("card"), Bytes.toBytes(card.toString))
+                  put.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes("card"), Bytes.toBytes(card.toString))
                   HBaseInsertHelper.put("cache:phone", put)
                 }
               } catch {
@@ -114,18 +112,15 @@ object ComplexDataRelationStreaming extends Serializable {
                 HBaseTableUtil.close(table)
               }
             }
-
           } else {
             //如果不是特殊表，处理通用表
             val phone_mac: String = map.get("phone_mac").get
             //获取所有关联字段 //phone_mac,wechat,send_mail
-            complexRelationField.foreach(relationFeild => {
-
-              if (map.containsKey(relationFeild)) {
-
+            complexRelationField.foreach(relationField => {
+              if (map.containsKey(relationField)) {
                 //因为需要双向关联，所以这里也要通过phone取去查找缓存表中是否存在phone
-                if ("phone".equals(relationFeild)) {
-                  //判断次电话号码在缓存表中是否存在
+                if ("phone".equals(relationField)) {
+                  //判断该电话号码在缓存表中是否存在
                   val phone = map.get("phone").get
                   var table: Table = null
                   var exists = false
@@ -151,26 +146,25 @@ object ComplexDataRelationStreaming extends Serializable {
                     val value = card
                     //使用"card" + 身份证号 作为版本号
                     val versionNum = ("card" + value).hashCode() & Integer.MAX_VALUE
-                    put.addColumn("cf".getBytes(), Bytes.toBytes("card"), versionNum, Bytes.toBytes(value.toString))
-                    HBaseInsertHelper.put("test:relation", put)
+                    put.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes("card"), versionNum, Bytes.toBytes(value.toString))
+                    HBaseInsertHelper.put(s"${CommonFields.NAME_SPACE}:relation", put)
                   }
                 }
                 //主关联表
                 val put = new Put(phone_mac.getBytes())
-                val value = map.get(relationFeild).get
-                val versionNum = (relationFeild + value).hashCode() & Integer.MAX_VALUE
-                put.addColumn("cf".getBytes(), Bytes.toBytes(relationFeild), versionNum, Bytes.toBytes(value.toString))
+                val value = map.get(relationField).get
+                val versionNum = (relationField + value).hashCode() & Integer.MAX_VALUE
+                put.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes(relationField), versionNum, Bytes.toBytes(value.toString))
                 println("put====" + put)
-                HBaseInsertHelper.put("test:relation", put)
+                HBaseInsertHelper.put(s"${CommonFields.NAME_SPACE}:relation", put)
                 //建立二级索引
                 //使用关联字段的值最为二级索引的rowkey
                 val put_2 = new Put(value.getBytes())
-                val table_name = s"test:${relationFeild}"
+                val table_name = s"${CommonFields.NAME_SPACE}:${relationField}"
                 //使用主表的rowkey 取hash作为二级索引的版本号
                 val versionNum_2 = phone_mac.hashCode() & Integer.MAX_VALUE
-                put_2.addColumn("cf".getBytes(), Bytes.toBytes("phone_mac"), versionNum_2, Bytes.toBytes(phone_mac.toString))
+                put_2.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes("phone_mac"), versionNum_2, Bytes.toBytes(phone_mac.toString))
                 HBaseInsertHelper.put(table_name, put_2)
-
               }
             })
           }
@@ -189,15 +183,15 @@ object ComplexDataRelationStreaming extends Serializable {
     */
   def initRelationHbaseTable(complexRelationField: Array[String]): Unit = {
 
-    val relationTable = "test:relation"
-    HBaseTableUtil.createTable(relationTable, "cf", true, -1, 100, SpiltRegionUtil.getSplitKeysBydinct)
+    val relationTable = s"${CommonFields.NAME_SPACE}:relation"
+    HBaseTableUtil.createTable(relationTable, CommonFields.COLUMN_FAMILY, true, -1, 100, SpiltRegionUtil.getSplitKeysBydinct)
 
-    val cacheTable = "cache:phone"
-    HBaseTableUtil.createTable(cacheTable, "cf", true, -1, 1, SpiltRegionUtil.getSplitKeysBydinct)
+    val cacheTable = CommonFields.CACHE_PHONE
+    HBaseTableUtil.createTable(cacheTable, CommonFields.COLUMN_FAMILY, true, -1, 1, SpiltRegionUtil.getSplitKeysBydinct)
 
     DataRelationStreaming.relationFields.foreach(field => {
-      val hbaseTable = s"test:${field.trim}"
-      HBaseTableUtil.createTable(hbaseTable, "cf", true, -1, 100, SpiltRegionUtil.getSplitKeysBydinct)
+      val hbaseTable = s"${CommonFields.NAME_SPACE}:${field.trim}"
+      HBaseTableUtil.createTable(hbaseTable, CommonFields.COLUMN_FAMILY, true, -1, 100, SpiltRegionUtil.getSplitKeysBydinct)
     })
   }
 
@@ -207,14 +201,14 @@ object ComplexDataRelationStreaming extends Serializable {
     *         <p>删除表</p>
     */
   def deleteHbaseTable(relationFields: Array[String]): Unit = {
-    val relationTable = "test:relation"
+    val relationTable = s"${CommonFields.NAME_SPACE}:relation"
     HBaseTableUtil.deleteTable(relationTable)
 
-    val cacheTable = "cache:phone"
+    val cacheTable = CommonFields.CACHE_PHONE
     HBaseTableUtil.deleteTable(cacheTable)
 
     relationFields.foreach(field => {
-      val hbaseTable = s"test:${field}"
+      val hbaseTable = s"${CommonFields.NAME_SPACE}:${field}"
       HBaseTableUtil.deleteTable(hbaseTable)
     })
   }
