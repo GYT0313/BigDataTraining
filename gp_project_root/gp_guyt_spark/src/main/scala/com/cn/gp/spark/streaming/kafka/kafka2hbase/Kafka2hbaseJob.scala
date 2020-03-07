@@ -3,6 +3,7 @@ package com.cn.gp.spark.streaming.kafka.kafka2hbase
 import java.util
 
 import com.cn.gp.hbase.insert.HBaseInsertHelper
+import com.cn.gp.spark.common.CommonFields
 import org.apache.hadoop.hbase.client.Put
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.spark.streaming.dstream.DStream
@@ -31,7 +32,7 @@ object Kafka2hbaseJob extends Serializable {
         var put = new Put((rowkey.getBytes()))
         val keys = x.keySet
         keys.foreach(key => {
-          put.addColumn("cf".getBytes(), Bytes.toBytes(key), Bytes.toBytes(x.get(key).get))
+          put.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes(key), Bytes.toBytes(x.get(key).get))
         })
         put
       })

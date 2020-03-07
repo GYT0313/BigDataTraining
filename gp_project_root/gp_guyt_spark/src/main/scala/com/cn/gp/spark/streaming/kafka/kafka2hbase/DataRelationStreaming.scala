@@ -68,19 +68,19 @@ object DataRelationStreaming extends Serializable {
               //因为值有可能是字符串，但是版本号必须是long类型，所以这里我们需要
               //将字符串影射唯一数字，而且必须是正整数
               val versionNum = (relationField + value).hashCode() & Integer.MAX_VALUE
-              put.addColumn("cf".getBytes(), Bytes.toBytes(relationField), versionNum, Bytes.toBytes(value.toString))
-              HBaseInsertHelper.put("test:relation", put)
-              println(s"往主关联表 test:relation 里面写入数据  rowkey=>${phone_mac} version=>${versionNum} 类型${relationField} value=>${value}")
+              put.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes(relationField), versionNum, Bytes.toBytes(value.toString))
+              HBaseInsertHelper.put(s"${CommonFields.NAME_SPACE}:relation", put)
+              println(s"往主关联表 ${CommonFields.NAME_SPACE}:relation 里面写入数据  rowkey=>${phone_mac} version=>${versionNum} 类型${relationField} value=>${value}")
 
               //建立二级索引
               //使用关联字段的值最为二级索引的rowkey
               // 二级索引就是把这个字段的值作为索引表rowkey,
               val put_2 = new Put(value.getBytes()) //把这个字段的值作为索引表rowkey,
-              val table_name = s"test:${relationField}" //往索引表里面取写
+              val table_name = s"${CommonFields.NAME_SPACE}:${relationField}" //往索引表里面取写
               //使用主表的rowkey  就是 取hash作为二级索引的版本号
               val versionNum_2 = phone_mac.hashCode() & Integer.MAX_VALUE
               // 把这个字段的mac做为索引表的值
-              put_2.addColumn("cf".getBytes(), Bytes.toBytes("phone_mac"), versionNum_2, Bytes.toBytes(phone_mac.toString))
+              put_2.addColumn(CommonFields.COLUMN_FAMILY.getBytes(), Bytes.toBytes("phone_mac"), versionNum_2, Bytes.toBytes(phone_mac.toString))
               HBaseInsertHelper.put(table_name, put_2)
               println(s"往二级索表 ${table_name}里面写入数据  rowkey=>${value} version=>${versionNum_2} value=>${phone_mac}")
             }
@@ -97,9 +97,9 @@ object DataRelationStreaming extends Serializable {
   def initRelationHbaseTable(relationFields: Array[String]): Unit = {
 
     //初始化总关联表
-    val relation_table = "test:relation"
+    val relation_table = s"${CommonFields.NAME_SPACE}:relation"
     HBaseTableUtil.createTable(relation_table,
-      "cf",
+      CommonFields.COLUMN_FAMILY,
       true,
       -1,
       100,
@@ -108,18 +108,18 @@ object DataRelationStreaming extends Serializable {
 
     //遍历所有关联字段，根据字段创建二级索引表
     relationFields.foreach(field => {
-      val hbase_table = s"test:${field}"
-      HBaseTableUtil.createTable(hbase_table, "cf", true, -1, 100, SpiltRegionUtil.getSplitKeysBydinct)
+      val hbase_table = s"${CommonFields.NAME_SPACE}:${field}"
+      HBaseTableUtil.createTable(hbase_table, CommonFields.COLUMN_FAMILY, true, -1, 100, SpiltRegionUtil.getSplitKeysBydinct)
       // HBaseTableUtil.deleteTable(hbase_table)
     })
   }
 
 
   def deleteHbaseTable(relationFields: Array[String]): Unit = {
-    val relation_table = "test:relation"
+    val relation_table = s"${CommonFields.NAME_SPACE}:relation"
     HBaseTableUtil.deleteTable(relation_table)
     relationFields.foreach(field => {
-      val hbase_table = s"test:${field}"
+      val hbase_table = s"${CommonFields.NAME_SPACE}:${field}"
       HBaseTableUtil.deleteTable(hbase_table)
     })
   }

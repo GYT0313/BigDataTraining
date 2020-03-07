@@ -17,6 +17,9 @@ object CommonFields {
   final val COLLECT_TIME = "collect_time"
   final val INDEX_DATE_NAME = "index_date"
 
-
+  // HBase
+  final val NAME_SPACE = "gp"
+  final val COLUMN_FAMILY = "cf"
+  final val CACHE_PHONE = "cache:phone"
 
 }
