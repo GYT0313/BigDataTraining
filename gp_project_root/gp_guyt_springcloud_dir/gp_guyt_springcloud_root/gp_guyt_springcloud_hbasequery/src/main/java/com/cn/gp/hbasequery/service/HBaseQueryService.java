@@ -1,6 +1,7 @@
 package com.cn.gp.hbasequery.service;
 
 
+import com.cn.gp.common.fields.SpringCloudCommonFields;
 import com.cn.gp.hbase.entity.HBaseCell;
 import com.cn.gp.hbase.entity.HBaseRow;
 import com.cn.gp.hbase.extractor.MultiVersionRowExtrator;
@@ -42,7 +43,7 @@ public class HBaseQueryService {
         //从索引表中获取总关联表的rowkey  获取phone对应的多版本 MAC
         HBaseSearchService baseSearchService = new HBaseSearchServiceImpl();
         // 命名空间+表名
-        String table = "test:" + field;
+        String table = SpringCloudCommonFields.NAME_SPACE + ":" + field;
         Get get = new Get(rowKey.getBytes());
         Set<String> search = null;
         try {
@@ -86,9 +87,9 @@ public class HBaseQueryService {
             list.add(get);
         });
 
-        // 通过relationRowKey，找test:relationh中所有信息
+        // 通过relationRowKey，找gp:relationh中所有信息
         HBaseSearchService hBaseSearchService = new HBaseSearchServiceImpl();
-        String relationTable = "test:relation";
+        String relationTable = SpringCloudCommonFields.TABLE_RELATION;
 
         MultiVersionRowExtrator multiVersionRowExtrator = new MultiVersionRowExtrator();
         // String tableName, List<Get> gets, RowExtractor<T> extractor

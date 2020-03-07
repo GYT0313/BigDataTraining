@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Set;
 
-@FeignClient("guyt-bigdata-hbasequery")
+@FeignClient("gp-guyt-hbasequery")
 public interface HBaseFeign {
 
     @ResponseBody

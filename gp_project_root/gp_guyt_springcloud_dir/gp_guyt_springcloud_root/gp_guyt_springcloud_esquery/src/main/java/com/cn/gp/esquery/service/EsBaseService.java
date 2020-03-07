@@ -1,8 +1,8 @@
 package com.cn.gp.esquery.service;
 
 
-import com.cn.guyt.es.jest.service.JestService;
-import com.cn.guyt.es.jest.service.ResultParse;
+import com.cn.gp.es.jest.service.JestService;
+import com.cn.gp.es.jest.service.ResultParse;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.SearchResult;
 import org.slf4j.Logger;
@@ -12,15 +12,27 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author GuYongtao
+ * @version 1.0.0
+ * <p>  </p>
+ * @date 2020/3/7
+ */
 @Service
 public class EsBaseService {
 
     private static Logger LOG = LoggerFactory.getLogger(EsBaseService.class);
 
 
-    // 参数: indexName, typeName
-    // 排序字段, sortField, sortValue
-    // 分页数, 每页多大量, pageNumber, pageSize
+    /**
+     * @param indexName  索引
+     * @param typeName   type
+     * @param sortField  排序字段
+     * @param sortValue  排序字段
+     * @param pageNumber pageNumber
+     * @param pageSize   每页多大量
+     * @return
+     */
     public List<Map<String, Object>> getBaseInfo(String indexName, String typeName,
                                                  String sortField, String sortValue,
                                                  int pageNumber, int pageSize) {
@@ -49,14 +61,11 @@ public class EsBaseService {
 
 
     /**
-     * @param [phoneMac]
      * @return java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
-     * @method: getLocus
      * @author GuYongtao
-     * @description: 时间轨迹数据
-     * @date 2019/10/9
+     * <p>时间轨迹数据  (可以传一个时间范围)</p>
+     * @date 2020/3/7
      */
-    // 可以传一个时间范围
     public List<Map<String, Object>> getLocus(String phoneMac) {
 
         // 实现查询
