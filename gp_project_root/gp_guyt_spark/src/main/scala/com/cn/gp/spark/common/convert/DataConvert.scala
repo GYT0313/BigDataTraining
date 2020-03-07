@@ -2,6 +2,7 @@ package com.cn.gp.spark.common.convert
 
 
 import com.cn.gp.common.config.ConfigUtil
+import com.cn.gp.spark.common.CommonFields
 
 import scala.collection.JavaConversions._
 
@@ -24,7 +25,7 @@ object DataConvert extends Serializable {
     val objectMap: java.util.HashMap[String, Object] = new java.util.HashMap[String, Object]()
 
     // ['wechat', [字段1: long, 字段2: int]]
-    val dataType = map.get("table").get
+    val dataType = map.get(CommonFields.TABLE_NAME).get
     // [字段1: long, 字段2: int]
     val fieldMap = typeFieldMap.get(dataType)
 

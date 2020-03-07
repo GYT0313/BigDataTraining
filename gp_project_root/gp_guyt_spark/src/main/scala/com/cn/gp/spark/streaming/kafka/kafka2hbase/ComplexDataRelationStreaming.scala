@@ -8,13 +8,11 @@ import com.cn.gp.hbase.extractor.{MapRowExtrator, SingleColumnMultiVersionRowExt
 import com.cn.gp.hbase.insert.HBaseInsertHelper
 import com.cn.gp.hbase.search.{HBaseSearchService, HBaseSearchServiceImpl}
 import com.cn.gp.hbase.spilt.SpiltRegionUtil
-import com.cn.gp.spark.common.{CommonFields, SparkContextFactory}
-import com.cn.gp.spark.streaming.kafka.kafka2es.Kafka2esStreaming.convertInputDStream2DStreamMapObject
-import com.cn.gp.spark.streaming.kafka.{RunArgsUtil, SparkKafkaConfigUtil}
+import com.cn.gp.spark.common.{CommonFields, SparkConfFactory}
+import com.cn.gp.spark.streaming.kafka.util.{SparkKafkaRecordUtil, SparkUtil}
 import org.apache.commons.lang3.StringUtils
 import org.apache.hadoop.hbase.client.{Get, Put, Table}
 import org.apache.hadoop.hbase.util.Bytes
-import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.JavaConversions._
@@ -24,8 +22,8 @@ import scala.collection.JavaConversions._
   * @author GuYongtao
   *         <p>复杂版本</p>
   */
-object ComplexDataRelationStreaming extends Serializable {
-  protected final val LOGGER: Logger = LoggerFactory.getLogger(ComplexDataRelationStreaming.getClass)
+class ComplexDataRelationStreaming(val argsMap: java.util.Map[String, Object]) extends Serializable with Runnable {
+  protected final val LOGGER: Logger = LoggerFactory.getLogger(getClass)
 
   val complexRelationField = ConfigUtil.getInstance()
     .getProperties("spark/relation.properties")
@@ -33,22 +31,16 @@ object ComplexDataRelationStreaming extends Serializable {
     .toString
     .split(",")
 
-  def main(args: Array[String]): Unit = {
-
-    //初始化hbase表
-    //nitRelationHbaseTable(complexRelationField)
-
-    val ssc = SparkContextFactory.newSparkLocalStreamingContext("Complex-Data-Relation-Streaming",
-      java.lang.Long.valueOf(30), 1)
-
-    val argsMap = RunArgsUtil.argsCheckBrokerListGroupIdTopics(args)
-    val kafkaParams = SparkKafkaConfigUtil.getKafkaParam(argsMap.get(CommonFields.BROKER_LIST).asInstanceOf[String],
-      argsMap.get(CommonFields.GROUP_ID).asInstanceOf[String])
-    // 获取KafkaInputDStream
-    val kafkaInputDStream = KafkaUtils.createDirectStream[String, String](ssc, LocationStrategies.PreferConsistent,
-      ConsumerStrategies.Subscribe[String, String](argsMap.get(CommonFields.TOPICS).asInstanceOf[Set[String]],
-        kafkaParams))
-    val kafkaDStream = convertInputDStream2DStreamMapObject(kafkaInputDStream)
+  /**
+    * @return void
+    * @author GuYongtao
+    *         <p></p>
+    */
+  def fromKafka2HBase(argsMap: java.util.Map[String, Object]): Unit = {
+    // 创建一个streaming context
+    val ssc = SparkConfFactory.newSparkLocalStreamingContext("kafka_2_hbase-spark-task")
+    val newArgsMap = SparkUtil.consumerGroupCumulative(argsMap, CommonFields.ID_HBASE)
+    val kafkaDStream = SparkKafkaRecordUtil.fromKafkaGetRecords(newArgsMap, ssc)
 
     kafkaDStream.foreachRDD(rdd => {
       rdd.foreachPartition(partition => {
@@ -203,7 +195,6 @@ object ComplexDataRelationStreaming extends Serializable {
   def deleteHbaseTable(relationFields: Array[String]): Unit = {
     val relationTable = s"${CommonFields.NAME_SPACE}:relation"
     HBaseTableUtil.deleteTable(relationTable)
-
     val cacheTable = CommonFields.CACHE_PHONE
     HBaseTableUtil.deleteTable(cacheTable)
 
@@ -213,4 +204,7 @@ object ComplexDataRelationStreaming extends Serializable {
     })
   }
 
+  override def run(): Unit = {
+    fromKafka2HBase(argsMap)
+  }
 }

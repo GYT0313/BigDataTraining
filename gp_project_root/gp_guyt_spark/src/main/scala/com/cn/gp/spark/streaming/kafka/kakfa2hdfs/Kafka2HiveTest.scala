@@ -4,8 +4,7 @@ import java.util
 
 import com.cn.gp.hdfs.HdfsAdmin
 import com.cn.gp.spark.common.{CommonFields, SparkConfFactory, SparkSessionFactory}
-import com.cn.gp.spark.streaming.kafka.{RunArgsUtil, SparkKafkaConfigUtil}
-import com.cn.gp.spark.streaming.kafka.kafka2es.Kafka2esStreaming.convertInputDStream2DStreamMapObject
+import com.cn.gp.spark.streaming.kafka.util.{RunArgsUtil, SparkKafkaConfigUtil, SparkUtil}
 import org.apache.hadoop.fs.Path
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.StructType
@@ -43,7 +42,7 @@ object Kafka2HiveTest extends Serializable {
     val kafkaInputDStream = KafkaUtils.createDirectStream[String, String](ssc, LocationStrategies.PreferConsistent,
       ConsumerStrategies.Subscribe[String, String](argsMap.get(CommonFields.TOPICS).asInstanceOf[Set[String]],
         kafkaParams))
-    val kafkaDStream = convertInputDStream2DStreamMapObject(kafkaInputDStream)
+    val kafkaDStream = SparkUtil.convertInputDStream2DStreamMapObject(kafkaInputDStream)
 
 
     val lines = kafkaInputDStream.map(_.value())

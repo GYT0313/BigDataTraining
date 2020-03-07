@@ -22,4 +22,9 @@ object CommonFields {
   final val COLUMN_FAMILY = "cf"
   final val CACHE_PHONE = "cache:phone"
 
+  // kafka group id num
+  final val ID_ELASTIC_SEARCH = 0
+  final val ID_WARNING = 1
+  final val ID_HBASE = 2
+  final val ID_HDFS = 3
 }

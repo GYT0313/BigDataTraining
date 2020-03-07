@@ -4,8 +4,7 @@ import java.util.Timer
 
 import com.cn.gp.redis.client.JedisSingle
 import com.cn.gp.spark.common.SparkConfFactory
-import com.cn.gp.spark.streaming.kafka.SparkKafkaConfigUtil
-import com.cn.gp.spark.streaming.kafka.kafka2es.Kafka2esStreaming.convertInputDStream2DStreamMapObject
+import com.cn.gp.spark.streaming.kafka.util.SparkKafkaConfigUtil
 import com.cn.gp.spark.warn.service.BlackRuleWarning
 import com.cn.gp.spark.warn.timer.SyncRule2Redis
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -18,8 +17,8 @@ import redis.clients.jedis.Jedis
 import scala.collection.JavaConversions
 import scala.util.parsing.json.JSON
 
-object WarningStreamingTask extends Serializable {
-  protected final val LOGGER: Logger = LoggerFactory.getLogger(WarningStreamingTask.getClass)
+class WarningStreamingTask extends Serializable with Runnable {
+  protected final val LOGGER: Logger = LoggerFactory.getLogger(getClass)
 
   def main(args: Array[String]): Unit = {
     // 定义一个定时器，同步mysql到redis
@@ -85,4 +84,7 @@ object WarningStreamingTask extends Serializable {
     })
   }
 
+  override def run(): Unit = {
+
+  }
 }

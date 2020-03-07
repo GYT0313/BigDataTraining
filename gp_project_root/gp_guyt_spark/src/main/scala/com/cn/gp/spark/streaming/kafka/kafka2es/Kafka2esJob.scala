@@ -2,8 +2,9 @@ package com.cn.gp.spark.streaming.kafka.kafka2es
 
 import com.cn.gp.es.admin.AdminUtil
 import com.cn.gp.es.client.ESClientUtils
+import com.cn.gp.spark.common.CommonFields
 import com.cn.gp.spark.common.convert.DataConvert
-import com.cn.gp.spark.streaming.kafka.SparkEsConfigUtil
+import com.cn.gp.spark.streaming.kafka.util.SparkEsConfigUtil
 import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.dstream.DStream
 import org.elasticsearch.client.transport.TransportClient

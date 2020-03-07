@@ -1,10 +1,9 @@
-package com.cn.gp.spark.streaming.kafka
+package com.cn.gp.spark.streaming.kafka.util
 
 import com.cn.gp.spark.common.CommonFields
 import scala.collection.JavaConversions._
 
 object RunArgsUtil extends Serializable {
-
 
   /**
     * @return java.util.Map<java.lang.String,java.lang.Object>

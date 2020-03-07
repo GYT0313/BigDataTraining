@@ -1,4 +1,4 @@
-package com.cn.gp.spark.streaming.kafka
+package com.cn.gp.spark.streaming.kafka.util
 
 import com.cn.gp.spark.common.SparkConfFactory
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}

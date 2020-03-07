@@ -5,8 +5,7 @@ import com.cn.gp.hbase.config.HBaseTableUtil
 import com.cn.gp.hbase.insert.HBaseInsertHelper
 import com.cn.gp.hbase.spilt.SpiltRegionUtil
 import com.cn.gp.spark.common.{CommonFields, SparkContextFactory}
-import com.cn.gp.spark.streaming.kafka.kafka2es.Kafka2esStreaming.convertInputDStream2DStreamMapObject
-import com.cn.gp.spark.streaming.kafka.{RunArgsUtil, SparkKafkaConfigUtil}
+import com.cn.gp.spark.streaming.kafka.util.{RunArgsUtil, SparkKafkaConfigUtil, SparkUtil}
 import org.apache.hadoop.hbase.client.Put
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
@@ -42,7 +41,7 @@ object DataRelationStreaming extends Serializable {
     val kafkaInputDStream = KafkaUtils.createDirectStream[String, String](ssc, LocationStrategies.PreferConsistent,
       ConsumerStrategies.Subscribe[String, String](argsMap.get(CommonFields.TOPICS).asInstanceOf[Set[String]],
         kafkaParams))
-    val kafkaDStream = convertInputDStream2DStreamMapObject(kafkaInputDStream)
+    val kafkaDStream = SparkUtil.convertInputDStream2DStreamMapObject(kafkaInputDStream)
 
     kafkaDStream.foreachRDD(rdd => {
 

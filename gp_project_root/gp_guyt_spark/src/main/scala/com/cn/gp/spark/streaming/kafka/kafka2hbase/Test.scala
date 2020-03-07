@@ -1,5 +1,7 @@
 package com.cn.gp.spark.streaming.kafka.kafka2hbase
 
+import com.cn.gp.spark.streaming.kafka.util.RunArgsUtil
+
 /**
   * @author GuYongtao 
   * @version 1.0.0
@@ -8,13 +10,14 @@ package com.cn.gp.spark.streaming.kafka.kafka2hbase
 object Test {
   def main(args: Array[String]): Unit = {
 
+    val complexDataRelationStreaming = new ComplexDataRelationStreaming(null)
     // 删表
 //    DataRelationStreaming.deleteHbaseTable(DataRelationStreaming.relationFields)
-//    ComplexDataRelationStreaming.deleteHbaseTable(ComplexDataRelationStreaming.complexRelationField);
+//    complexDataRelationStreaming.deleteHbaseTable(complexDataRelationStreaming.complexRelationField);
 
     // 建表
 //    DataRelationStreaming.initRelationHbaseTable(DataRelationStreaming.relationFields)
-   ComplexDataRelationStreaming.initRelationHbaseTable(ComplexDataRelationStreaming.complexRelationField)
+    complexDataRelationStreaming.initRelationHbaseTable(complexDataRelationStreaming.complexRelationField)
 
 
 

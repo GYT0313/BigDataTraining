@@ -47,6 +47,7 @@ object SparkConfFactory extends Serializable {
     new StreamingContext(sparkConf, Seconds(batchInterval))
   }
 
+
   def newSparkStreamingContext(appName: String = "sparkStreaming", batchInterval: Long = 30L): StreamingContext = {
     // batch interval多少秒读取一次
     val sparkConf = SparkConfFactory.newSparkConf(appName)
