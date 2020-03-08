@@ -74,6 +74,7 @@ object Kafka2HiveStreaming extends Serializable {
   }
 
   def main(args: Array[String]): Unit = {
+    synchronizeCombineHadoopFile()
     val argsMap = RunArgsUtil.argsCheckBrokerListGroupIdTopics(args)
     fromKafka2Hive(argsMap)
   }
