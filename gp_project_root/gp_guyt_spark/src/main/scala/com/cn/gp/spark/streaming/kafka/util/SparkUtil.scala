@@ -47,10 +47,12 @@ object SparkUtil extends Serializable {
     */
   def consumerGroupCumulative(argsMap: java.util.Map[String, Object],
                               cumulativeNum: Int): java.util.Map[String, Object] = {
-    val splits = String.valueOf(argsMap.get(CommonFields.GROUP_ID)).split("-")
+    val newArgsMap = new java.util.HashMap[String, Object]
+    newArgsMap.putAll(argsMap)
+    val splits = String.valueOf(newArgsMap.get(CommonFields.GROUP_ID)).split("-")
     val newGroupNumString = (splits(1).toInt + cumulativeNum).toString
-    argsMap.put(CommonFields.GROUP_ID, splits(0) + newGroupNumString)
-    argsMap
+    newArgsMap.put(CommonFields.GROUP_ID, s"${splits(0)}-${newGroupNumString}")
+    newArgsMap
   }
 
 

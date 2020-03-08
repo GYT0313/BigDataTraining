@@ -11,7 +11,7 @@ import com.cn.gp.hbase.search.{HBaseSearchService, HBaseSearchServiceImpl}
 import com.cn.gp.hbase.spilt.SpiltRegionUtil
 import com.cn.gp.redis.client.JedisSingle
 import com.cn.gp.spark.common.{CommonFields, SparkConfFactory}
-import com.cn.gp.spark.streaming.kafka.util.{SparkKafkaRecordUtil, SparkUtil}
+import com.cn.gp.spark.streaming.kafka.util.{RunArgsUtil, SparkKafkaRecordUtil, SparkUtil}
 import com.cn.gp.spark.warn.timer.SyncRule2Redis
 import org.apache.commons.lang3.StringUtils
 import org.apache.hadoop.hbase.client.{Get, Put, Table}
@@ -26,8 +26,8 @@ import scala.collection.JavaConversions._
   * @author GuYongtao
   *         <p>复杂版本</p>
   */
-class ComplexDataRelationStreaming(val argsMap: java.util.Map[String, Object]) extends Serializable with Runnable {
-  protected final val LOGGER: Logger = LoggerFactory.getLogger(getClass)
+object ComplexDataRelationStreaming extends Serializable {
+  protected final val LOGGER: Logger = LoggerFactory.getLogger(ComplexDataRelationStreaming.getClass)
 
   val complexRelationField = ConfigUtil.getInstance()
     .getProperties("spark/relation.properties")
@@ -41,10 +41,8 @@ class ComplexDataRelationStreaming(val argsMap: java.util.Map[String, Object]) e
     *         <p></p>
     */
   def fromKafka2HBase(argsMap: java.util.Map[String, Object]): Unit = {
-    // 创建一个streaming context
-    val ssc = SparkConfFactory.newSparkLocalStreamingContext("kafka_2_hbase-spark-task")
-    val newArgsMap = SparkUtil.consumerGroupCumulative(argsMap, CommonFields.ID_HBASE)
-    val kafkaDStream = SparkKafkaRecordUtil.fromKafkaGetRecords(newArgsMap, ssc)
+    val ssc = SparkConfFactory.newSparkLocalStreamingContext()
+    val kafkaDStream = SparkKafkaRecordUtil.fromKafkaGetRecords(argsMap, ssc)
 
     kafkaDStream.foreachRDD(rdd => {
       // 客户端连接不要放在RDD外面，因为处理partition时，数据需要分发到各个节点，数据分发需要序列化,如果不能序列化，将报错
@@ -249,8 +247,8 @@ class ComplexDataRelationStreaming(val argsMap: java.util.Map[String, Object]) e
     timer.schedule(new SyncRule2Redis, 0, 1 * 1000 * 60 * 1)
   }
 
-  override def run(): Unit = {
-    synchronizeWarningRulesFromMySQL2Redis()
+  def main(args: Array[String]): Unit = {
+    val argsMap = RunArgsUtil.argsCheckBrokerListGroupIdTopics(args)
     fromKafka2HBase(argsMap)
   }
 }

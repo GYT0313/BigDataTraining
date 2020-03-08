@@ -3,7 +3,7 @@ package com.cn.gp.spark.streaming.kafka.kafka2es
 import com.cn.gp.common.project.datatype.DataTypeProperties
 import com.cn.gp.common.time.TimeTranstationUtils
 import com.cn.gp.spark.common.{CommonFields, SparkConfFactory}
-import com.cn.gp.spark.streaming.kafka.util.{SparkKafkaRecordUtil, SparkUtil}
+import com.cn.gp.spark.streaming.kafka.util.{RunArgsUtil, SparkKafkaRecordUtil, SparkUtil}
 import org.apache.spark.storage.StorageLevel
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -14,8 +14,8 @@ import scala.collection.JavaConversions._
   * @version 1.0.0
   *          <p>kafka数据写入es</p>
   */
-class Kafka2esStreaming(val argsMap: java.util.Map[String, Object]) extends Serializable with Runnable {
-  protected final val LOGGER: Logger = LoggerFactory.getLogger(getClass)
+object Kafka2esStreaming extends Serializable {
+  protected final val LOGGER: Logger = LoggerFactory.getLogger(Kafka2esStreaming.getClass)
 
   // 数据类型wechat, search
   private val dataTypes: java.util.Set[String] = DataTypeProperties.dataTypeMap.keySet()
@@ -26,10 +26,8 @@ class Kafka2esStreaming(val argsMap: java.util.Map[String, Object]) extends Seri
     *         <p></p>
     */
   def fromKafka2ElasticSearch(argsMap: java.util.Map[String, Object]): Unit = {
-    // 创建一个streaming context
-    val ssc = SparkConfFactory.newSparkLocalStreamingContext("kafka_2_es-spark-task")
-    val newArgsMap = SparkUtil.consumerGroupCumulative(argsMap, CommonFields.ID_ELASTIC_SEARCH)
-    val kafkaDStream = SparkKafkaRecordUtil.fromKafkaGetRecords(newArgsMap, ssc)
+    val ssc = SparkConfFactory.newSparkLocalStreamingContext()
+    val kafkaDStream = SparkKafkaRecordUtil.fromKafkaGetRecords(argsMap, ssc)
 
     // 增加index_date
     val newKafkaDStream = kafkaDStream.map(map => {
@@ -54,7 +52,8 @@ class Kafka2esStreaming(val argsMap: java.util.Map[String, Object]) extends Seri
     ssc.awaitTermination()
   }
 
-  override def run(): Unit = {
+  def main(args: Array[String]): Unit = {
+    val argsMap = RunArgsUtil.argsCheckBrokerListGroupIdTopics(args)
     fromKafka2ElasticSearch(argsMap)
   }
 }

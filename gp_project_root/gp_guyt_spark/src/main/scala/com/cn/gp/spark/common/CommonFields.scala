@@ -11,6 +11,7 @@ object CommonFields {
   final val HIVE_SITE_XML = "spark/hive/hive-site.xml"
   final val HIVE_META_STORE_DIR = "/user/hive/warehouse/external/"
   final val FIELD_MAPPING = "es/mapping/field-mapping.properties"
+  final val HADOOP_HTTP_URL = "hdfs://gp-guyt-1:8020"
 
   // 字段名称
   final val TABLE_NAME = "table_name"
@@ -22,9 +23,4 @@ object CommonFields {
   final val COLUMN_FAMILY = "cf"
   final val CACHE_PHONE = "cache:phone"
 
-  // kafka group id num
-  final val ID_ELASTIC_SEARCH = 0
-  final val ID_WARNING = 1
-  final val ID_HBASE = 2
-  final val ID_HDFS = 3
 }

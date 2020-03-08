@@ -26,6 +26,11 @@ object SparkConfFactory extends Serializable {
   private val DEFAULT_STREAMING_PATH = "/spark/spark-streaming-config.properties"
   private val DEFAULT_STARTWITHJAVA_PATH = "/spark/spark-start-config.properties"
 
+
+  def newSparkClusterConf(): SparkConf = {
+    new SparkConf()
+  }
+
   /**
     * @return org.apache.spark.SparkConf
     * @author GuYongtao
@@ -45,6 +50,12 @@ object SparkConfFactory extends Serializable {
     val sparkConf = SparkConfFactory.newSparkLocalConf(appName, threads)
     sparkConf.set("spark.streaming.kafka.maxRatePerPartition", "1")
     new StreamingContext(sparkConf, Seconds(batchInterval))
+  }
+
+  def newSparkClusterStreamingContext(): StreamingContext = {
+    val sparkConf = SparkConfFactory.newSparkClusterConf()
+    sparkConf.set("spark.streaming.kafka.maxRatePerPartition", "1")
+    new StreamingContext(sparkConf, Seconds(30L))
   }
 
 
