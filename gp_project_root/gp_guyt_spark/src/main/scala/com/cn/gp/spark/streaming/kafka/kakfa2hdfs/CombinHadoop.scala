@@ -1,5 +1,7 @@
 package com.cn.gp.spark.streaming.kafka.kakfa2hdfs
 
+import java.util.TimerTask
+
 import com.cn.gp.hdfs.HdfsAdmin
 import com.cn.gp.spark.common.{CommonFields, SparkConfFactory, SparkSessionFactory}
 import org.apache.hadoop.fs.{FileSystem, FileUtil, Path}
@@ -13,13 +15,8 @@ import scala.collection.JavaConversions._
   * @version 1.0.0
   *          <p>合并HDFS小文件任务</p>
   */
-object CombineHdfs extends Serializable {
-  protected final val LOGGER: Logger = LoggerFactory.getLogger(HiveConfig.getClass)
-
-
-  def main(args: Array[String]): Unit = {
-    combineHadoopFile()
-  }
+class CombinHadoop() extends TimerTask with Serializable {
+  protected final val LOGGER: Logger = LoggerFactory.getLogger(getClass)
 
   /**
     * @return void
@@ -36,7 +33,7 @@ object CombineHdfs extends Serializable {
       val tablePath = s"${CommonFields.HIVE_META_STORE_DIR}$table"
       // 通过sparkSQL 加载 这些目录的文件
       // 获取数据类型的schema 表结构, 并load数据
-      val hadoopTablePath = s"hdfs://gp-guyt-1:8020${tablePath}"
+      val hadoopTablePath = s"${CommonFields.HADOOP_HTTP_URL}${tablePath}"
       val tableDF = spark.read.schema(HiveConfig.mapSchema.get(table)).parquet(hadoopTablePath)
 
       // 先获取原来数据种的所有文件  HDFS文件 API
@@ -60,9 +57,10 @@ object CombineHdfs extends Serializable {
       } catch {
         case e: Exception => println(s"[${table}]合并失败...\n" + e)
       }
-
-
-
     })
+  }
+
+  override def run(): Unit = {
+    combineHadoopFile()
   }
 }

@@ -1,4 +1,4 @@
-package com.cn.gp.spark.streaming.kafka
+package com.cn.gp.spark.streaming.kafka.util
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer

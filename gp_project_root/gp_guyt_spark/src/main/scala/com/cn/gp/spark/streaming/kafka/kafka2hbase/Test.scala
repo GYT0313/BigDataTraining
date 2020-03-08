@@ -10,11 +10,11 @@ object Test {
 
     // 删表
 //    DataRelationStreaming.deleteHbaseTable(DataRelationStreaming.relationFields)
-//    ComplexDataRelationStreaming.deleteHbaseTable(ComplexDataRelationStreaming.complexRelationField);
+    ComplexDataRelationStreaming.deleteHbaseTable(ComplexDataRelationStreaming.complexRelationField);
 
     // 建表
 //    DataRelationStreaming.initRelationHbaseTable(DataRelationStreaming.relationFields)
-   ComplexDataRelationStreaming.initRelationHbaseTable(ComplexDataRelationStreaming.complexRelationField)
+    ComplexDataRelationStreaming.initRelationHbaseTable(ComplexDataRelationStreaming.complexRelationField)
 
 
 

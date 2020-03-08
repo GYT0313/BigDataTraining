@@ -3,15 +3,11 @@ package com.cn.gp.spark.streaming.kafka.kafka2es
 import com.cn.gp.common.project.datatype.DataTypeProperties
 import com.cn.gp.common.time.TimeTranstationUtils
 import com.cn.gp.spark.common.{CommonFields, SparkConfFactory}
-import com.cn.gp.spark.streaming.kafka.SparkKafkaConfigUtil
-import org.apache.kafka.clients.consumer.ConsumerRecord
+import com.cn.gp.spark.streaming.kafka.util.{RunArgsUtil, SparkKafkaRecordUtil, SparkUtil}
 import org.apache.spark.storage.StorageLevel
-import org.apache.spark.streaming.dstream.{DStream, InputDStream}
-import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.JavaConversions._
-import scala.util.parsing.json.JSON
 
 /**
   * @author GuYongtao
@@ -24,20 +20,14 @@ object Kafka2esStreaming extends Serializable {
   // 数据类型wechat, search
   private val dataTypes: java.util.Set[String] = DataTypeProperties.dataTypeMap.keySet()
 
-  def main(args: Array[String]): Unit = {
-    //
-    val topics = Set("gp_3")
-    val groupId = "consumer-group-88"
-
-    // 创建一个streaming context
-    val ssc = SparkConfFactory.newSparkLocalStreamingContext("kafka2es", 5L)
-
-    val kafkaParams = SparkKafkaConfigUtil.getKafkaParam("gp-guyt-1:9092,gp-guyt-2:9092,,gp-guyt-3:9092",
-      groupId)
-    // 获取KakfaInputDStream
-    val kafkaInputDSream = KafkaUtils.createDirectStream[String, String](ssc, LocationStrategies.PreferConsistent,
-      ConsumerStrategies.Subscribe[String, String](topics, kafkaParams))
-    val kafkaDStream = convertInputDStream2DStreamMapObject(kafkaInputDSream)
+  /**
+    * @return void
+    * @author GuYongtao
+    *         <p></p>
+    */
+  def fromKafka2ElasticSearch(argsMap: java.util.Map[String, Object]): Unit = {
+    val ssc = SparkConfFactory.newSparkLocalStreamingContext()
+    val kafkaDStream = SparkKafkaRecordUtil.fromKafkaGetRecords(argsMap, ssc)
 
     // 增加index_date
     val newKafkaDStream = kafkaDStream.map(map => {
@@ -58,34 +48,12 @@ object Kafka2esStreaming extends Serializable {
       Kafka2esJob.insertData2EsByDate(dataType, typeDS, CommonFields.INDEX_DATE_NAME)
     })
 
-    val lines = newKafkaDStream.map(_.values)
-    lines.print()
-
     ssc.start()
     ssc.awaitTermination()
-    ssc.stop()
   }
 
-  /**
-    * @return org.apache.spark.streaming.dstream.DStream<java.util.Map<java.lang.String,java.lang.String>>
-    * @author GuYongtao
-    *         <p>将InputDStream转换为DStream</p>
-    */
-  def convertInputDStream2DStreamMapObject(kafkaDS: InputDStream[ConsumerRecord[String, String]]
-                                          ): DStream[collection.immutable.Map[String, String]] = {
-    // 定义转换器
-    val converter = { json: String => {
-      // 转换类型
-      val res = JSON.parseFull(json) match {
-        case Some(x: collection.immutable.Map[String, String]) => x
-      }
-      res
-    }
-    }
-
-    kafkaDS.map(x => {
-      converter(x.value().toString)
-    })
+  def main(args: Array[String]): Unit = {
+    val argsMap = RunArgsUtil.argsCheckBrokerListGroupIdTopics(args)
+    fromKafka2ElasticSearch(argsMap)
   }
-
 }

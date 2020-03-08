@@ -1,4 +1,4 @@
-package com.cn.gp.spark.streaming.kafka
+package com.cn.gp.spark.streaming.kafka.util
 
 object SparkEsConfigUtil {
   val ES_NODES = "es.nodes"

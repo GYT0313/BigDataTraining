@@ -11,6 +11,7 @@ object CommonFields {
   final val HIVE_SITE_XML = "spark/hive/hive-site.xml"
   final val HIVE_META_STORE_DIR = "/user/hive/warehouse/external/"
   final val FIELD_MAPPING = "es/mapping/field-mapping.properties"
+  final val HADOOP_HTTP_URL = "hdfs://gp-guyt-1:8020"
 
   // 字段名称
   final val TABLE_NAME = "table_name"
