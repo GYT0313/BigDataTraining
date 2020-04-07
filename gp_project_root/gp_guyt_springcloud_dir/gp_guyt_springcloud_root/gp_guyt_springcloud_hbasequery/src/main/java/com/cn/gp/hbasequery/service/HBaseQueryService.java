@@ -104,7 +104,9 @@ public class HBaseQueryService {
                     value.forEach(hBaseCell -> {
                         listValue.add(hBaseCell.toString());
                     });
-                    mapResult.put(key, listValue);
+                    if (!field.equals(key)) {
+                        mapResult.put(key + "[" + UUID.randomUUID().toString() + "]", listValue);
+                    }
                 });
             });
         } catch (IOException e) {

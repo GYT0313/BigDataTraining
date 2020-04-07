@@ -4,7 +4,6 @@ import java.util.Timer
 
 import com.cn.gp.hdfs.HdfsAdmin
 import com.cn.gp.spark.common.{CommonFields, SparkConfFactory, SparkSessionFactory}
-import com.cn.gp.spark.streaming.kafka.kakfa2hdfs.Kafka2HiveTest.rdd2DF
 import com.cn.gp.spark.streaming.kafka.util.{RunArgsUtil, SparkKafkaRecordUtil, SparkUtil}
 import org.apache.hadoop.fs.Path
 import org.apache.spark.sql.SaveMode
@@ -42,7 +41,7 @@ object Kafka2HiveStreaming extends Serializable {
                   val hiveContext = HiveConf.getHiveContext(sc)
                   hiveContext.sql(s"USE DEFAULT")*/
           //将RDD转为DF   原因：要加字段描述，写比较方便 DF
-          val tableDF = rdd2DF(rdd, schemaFields, spark, schema)
+          val tableDF = SparkUtil.rdd2DF(rdd, schemaFields, spark, schema)
           if (!tableDF.isEmpty) {
             //多种数据一起处理
             val pathAll = s"${CommonFields.HADOOP_HTTP_URL}${CommonFields.HIVE_META_STORE_DIR}${table}"

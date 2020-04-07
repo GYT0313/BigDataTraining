@@ -13,9 +13,9 @@ object SparkStreamingKafkaTest extends Serializable {
   protected final val LOGGER: Logger = LoggerFactory.getLogger(SparkStreamingKafkaTest.getClass)
 
   def main(args: Array[String]): Unit = {
-    val topics = Set("gp_3")
+    val topics = Set("gp_11")
     val kafkaParam = SparkKafkaConfigUtil.getKafkaParam(
-      "gp-guyt-1:9092,gp-guyt-2:9092,gp-guyt-3:9092", "consumer-group-96")
+      "gp-guyt-1:9092,gp-guyt-2:9092,gp-guyt-3:9092", "consumer-group-1")
     val ssc = SparkConfFactory.newSparkLocalStreamingContext("sparkstreaming-test1", 5L)
 
     val kafkaDS = KafkaUtils.createDirectStream[String, String](ssc, LocationStrategies.PreferConsistent,

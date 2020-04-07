@@ -1,11 +1,18 @@
 package com.cn.gp.spark.streaming.kafka.util
 
+import java.util
+
 import com.cn.gp.spark.common.CommonFields
 import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.streaming.dstream.{DStream, InputDStream}
 
 import scala.collection.JavaConversions
 import scala.util.parsing.json.JSON
+
+import scala.collection.JavaConversions._
 
 object SparkUtil extends Serializable {
 
@@ -53,6 +60,30 @@ object SparkUtil extends Serializable {
     val newGroupNumString = (splits(1).toInt + cumulativeNum).toString
     newArgsMap.put(CommonFields.GROUP_ID, s"${splits(0)}-${newGroupNumString}")
     newArgsMap
+  }
+
+  /**
+    * @return org.apache.spark.sql.Dataset<org.apache.spark.sql.Row>
+    * @author GuYongtao
+    *         <p>将RDD转为DF</p>
+    */
+  def rdd2DF(rdd: RDD[Map[String, String]],
+             schemaFields: Array[String],
+             spark: SparkSession,
+             schema: StructType): DataFrame = {
+
+    //将RDD[Map[String,String]]转为RDD[ROW]
+    val rddRow = rdd.map(record => {
+      val listRow: util.ArrayList[Object] = new util.ArrayList[Object]()
+      for (schemaField <- schemaFields) {
+        listRow.add(record.get(schemaField).get)
+      }
+      Row.fromSeq(listRow)
+    }).repartition(1)
+    //构建DF
+    //def createDataFrame(rowRDD: RDD[Row], schema: StructType)
+    val typeDF = spark.createDataFrame(rddRow, schema)
+    typeDF
   }
 
 

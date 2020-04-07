@@ -1,7 +1,6 @@
 package com.cn.gp.es.admin;
 
 
-import com.cn.gp.common.file.FileCommon;
 import com.cn.gp.es.client.ESClientUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
@@ -19,11 +18,131 @@ import org.slf4j.LoggerFactory;
 public class AdminUtil {
     private static Logger LOG = LoggerFactory.getLogger(AdminUtil.class);
 
+    private final static String searchJson = "{\n" +
+            "  \"_source\": {\n" +
+            "    \"enabled\": true\n" +
+            "  },\n" +
+            "  \"properties\": {\n" +
+            "    \"imei\": {\n" +
+            "      \"type\": \"keyword\"\n" +
+            "    },\n" +
+            "    \"imsi\": {\n" +
+            "      \"type\": \"keyword\"\n" +
+            "    },\n" +
+            "    \"longitude\": {\n" +
+            "      \"type\": \"double\"\n" +
+            "    },\n" +
+            "    \"latitude\": {\n" +
+            "      \"type\": \"double\"\n" +
+            "    },\n" +
+            "    \"phone_mac\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"device_mac\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"device_number\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"collect_time\": {\n" +
+            "      \"type\": \"long\"\n" +
+            "    },\n" +
+            "    \"username\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"phone\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"engine\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"content\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"search_url\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"id\": {\n" +
+            "      \"type\": \"keyword\"\n" +
+            "    },\n" +
+            "    \"table_name\": {\n" +
+            "      \"type\": \"keyword\"\n" +
+            "    },\n" +
+            "    \"filename\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"absolute_filename\": {\n" +
+            "      \"type\": \"text\",\n" +
+            "      \"fields\": {\n" +
+            "        \"keyword\": {\n" +
+            "          \"ignore_above\": 256,\n" +
+            "          \"type\": \"keyword\"\n" +
+            "        }\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}\n";
+
+
 
     public static void main(String[] args) throws Exception {
         //创建索引和mapping
         AdminUtil.buildIndexAndTypes("test", "test",
-                "es/mapping/wechat.json", 3, 1);
+                "es/mapping/search.json", 3, 1);
         //index = 类型+日期
 
     }
@@ -39,12 +158,12 @@ public class AdminUtil {
     public static boolean buildIndexAndTypes(String index, String type, String path, int shard, int replication) throws Exception {
         boolean flag;
         TransportClient client = ESClientUtils.getClient();
-        String mappingJson = FileCommon.getAbstractPath(path);
+//        String mappingJson = FileCommon.getAbstractPath(path);
 
         boolean indices = AdminUtil.createIndices(client, index, shard, replication);
         if (indices) {
             LOG.info("创建索引" + index + "成功");
-            flag = MappingUtil.addMapping(client, index, type, mappingJson);
+            flag = MappingUtil.addMapping(client, index, type, searchJson);
         } else {
             LOG.error("创建索引" + index + "失败");
             flag = false;

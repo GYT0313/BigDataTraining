@@ -12,6 +12,8 @@ object Test {
 //    DataRelationStreaming.deleteHbaseTable(DataRelationStreaming.relationFields)
     ComplexDataRelationStreaming.deleteHbaseTable(ComplexDataRelationStreaming.complexRelationField);
 
+    Thread.sleep(5000);
+
     // 建表
 //    DataRelationStreaming.initRelationHbaseTable(DataRelationStreaming.relationFields)
     ComplexDataRelationStreaming.initRelationHbaseTable(ComplexDataRelationStreaming.complexRelationField)

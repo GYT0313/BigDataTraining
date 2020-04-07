@@ -28,21 +28,20 @@ object Kafka2esStreaming extends Serializable {
   def fromKafka2ElasticSearch(argsMap: java.util.Map[String, Object]): Unit = {
     val ssc = SparkConfFactory.newSparkLocalStreamingContext()
     val kafkaDStream = SparkKafkaRecordUtil.fromKafkaGetRecords(argsMap, ssc)
-
     // 增加index_date
     val newKafkaDStream = kafkaDStream.map(map => {
       val collectTime = map.get(CommonFields.COLLECT_TIME) match {
         case Some(x) => x
       }
       var temp = map
-      temp += (CommonFields.INDEX_DATE_NAME -> TimeTranstationUtils.Date2yyyyMMddHH(java.lang.Long.valueOf(collectTime + "000")))
+      temp += (CommonFields.INDEX_DATE_NAME -> TimeTranstationUtils.Date2yyyyMMddHH(
+        java.lang.Long.valueOf(collectTime + "000")))
       temp
     }).persist(StorageLevel.MEMORY_AND_DISK)
-
     // 按数据类型入ES
     dataTypes.foreach(dataType => {
       val typeDS = newKafkaDStream.filter(x => {
-        // x.get("table")得到是数据类型：wechat、qq，而不是x.get(dataType)
+        // x.get("table")得到是数据类型：search，而不是x.get(dataType)
         dataType.equals(x.get(CommonFields.TABLE_NAME).get)
       })
       Kafka2esJob.insertData2EsByDate(dataType, typeDS, CommonFields.INDEX_DATE_NAME)

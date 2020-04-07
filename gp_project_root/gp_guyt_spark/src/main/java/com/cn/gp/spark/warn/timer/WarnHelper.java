@@ -51,6 +51,7 @@ public class WarnHelper {
                         warnFieldValue) ? warnFieldValue : "");
                 jedis.hset(redisKey, "sendMobile", StringUtils.isNoneBlank(sendMobile) ? sendMobile : "");
                 jedis.hset(redisKey, "sendType", StringUtils.isNoneBlank(sendType) ? sendType : "");
+                LOG.info("同布预警规则成功...");
             }
         } catch (Exception e) {
             LOG.error("同步规则到redis 失败", e);

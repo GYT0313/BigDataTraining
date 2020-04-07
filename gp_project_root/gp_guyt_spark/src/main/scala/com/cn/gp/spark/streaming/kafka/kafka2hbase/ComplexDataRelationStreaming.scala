@@ -244,11 +244,12 @@ object ComplexDataRelationStreaming extends Serializable {
     // 定义一个定时器，同步mysql到redis
     val timer: Timer = new Timer
     // 任务类: SyncRule2Redis, 0-启动时立即执行一次， 一分钟执行一次
-    timer.schedule(new SyncRule2Redis, 0, 1 * 1000 * 60 * 1)
+    timer.schedule(new SyncRule2Redis, 0, 1 * 1000 * 60 * 3)
   }
 
   def main(args: Array[String]): Unit = {
     val argsMap = RunArgsUtil.argsCheckBrokerListGroupIdTopics(args)
+    synchronizeWarningRulesFromMySQL2Redis()
     fromKafka2HBase(argsMap)
   }
 }
